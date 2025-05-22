@@ -1,9 +1,44 @@
+Array
+(
+    [usuario] => Array
+        (
+            [id] => 2
+            [nombre] => pepe
+            [email] => pepe@gmail.com
+            [telefono] => 123456789
+            [password] => $2y$10$TFVFUHHLTtMNMg5O8s6dru2pvJW7G5FnJvPHkDSTzg9lYFsP35uXa
+            [rol] => cliente
+            [fecha_registro] => 2025-04-08 09:17:08
+        )
 
-Session ID: 
-Session usuario_id: NO
-Session ID: 
-Session usuario_id: NO
+)
 Session ID: 3b042a5b25fc26043c9d018b3097953f
-Session usuario_id: NO
-Session ID: 3b042a5b25fc26043c9d018b3097953f
-Session usuario_id: NO
+Session usuario_id: 2
+Array
+(
+    [usuario] => Array
+        (
+            [id] => 2
+            [nombre] => pepe
+            [email] => pepe@gmail.com
+            [telefono] => 123456789
+            [password] => $2y$10$TFVFUHHLTtMNMg5O8s6dru2pvJW7G5FnJvPHkDSTzg9lYFsP35uXa
+            [rol] => cliente
+            [fecha_registro] => 2025-04-08 09:17:08
+        )
+
+)
+Session ID: 759512c779bbea8e5a5139554c900571
+Session usuario_id: 2
+Config.php incluido
+Session status: 1
+Session ID: 
+Conn: NO
+Config.php incluido
+Session status: 1
+Session ID: 
+Conn: NO
+Config.php incluido
+Session status: 1
+Session ID: 
+Conn: NO

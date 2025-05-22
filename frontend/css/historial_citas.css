@@ -73,18 +73,19 @@ tbody tr:hover {
     font-size: 1.1rem;
 }
 
-.accion button {
-  padding: 5px 10px;
-  background-color: #28a745;
+.btn-eliminar {
+  background: transparent;
   border: none;
-  color: white;
   cursor: pointer;
-  border-radius: 4px;
+  color: #c0392b; /* rojo fuerte */
+  transition: color 0.3s ease;
+  padding: 0;
 }
 
-.accion button:hover {
-  background-color: #218838;
+.btn-eliminar:hover {
+  color: #e74c3c; /* rojo más claro al pasar el mouse */
 }
+
 
 
 /* Responsive */
