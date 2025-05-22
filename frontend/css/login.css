@@ -1,0 +1,45 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body, html {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-image: url('../img/pexels-rdne-7697715.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+  }
+  
+  /* Contenedor centrado y separación por navbar fixed */
+  .login-main {
+    height: 100%;
+    padding-top: 80px; /* para evitar que tape el navbar fijo */
+  }
+  
+  /* Caja del formulario */
+  .login-box {
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-radius: 12px;
+  }
+  
+  .login-box input {
+    border-radius: 6px;
+    font-size: 1rem;
+    padding: 10px;
+  }
+  
+  .login-box button {
+    padding: 10px;
+    border-radius: 6px;
+  }
+  
+  .login-box a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  

@@ -1,0 +1,55 @@
+/* Fondo y tipografía */
+body {
+    background-image: url('../img/pexels-rdne-7697715.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Contenedor del formulario */
+  .main-container {
+    max-width: 500px;
+    margin: 140px auto 50px;
+    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Título */
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #212529;
+  }
+  
+  /* Etiquetas de los campos */
+  .form-label {
+    font-weight: 600;
+  }
+  
+  /* Botón */
+  .btn-success {
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 8px;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+  }
+  
+  /* Responsive */
+  @media (max-width: 576px) {
+    .main-container {
+      margin-top: 100px;
+      padding: 25px;
+    }
+  }
+  

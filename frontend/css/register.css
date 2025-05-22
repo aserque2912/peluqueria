@@ -1,0 +1,38 @@
+body, html {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-image: url('../img/pexels-rdne-7697715.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .register-main {
+    height: 100%;
+    padding-top: 80px; /* Compensa el navbar fijo */
+  }
+  
+  .register-box {
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-radius: 12px;
+  }
+  
+  .register-box input {
+    border-radius: 6px;
+    font-size: 1rem;
+    padding: 10px;
+  }
+  
+  .register-box button {
+    padding: 10px;
+    border-radius: 6px;
+  }
+  
+  .register-box a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  

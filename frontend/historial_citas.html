@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mis Citas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/navbar.css">
+    <link rel="stylesheet" href="./css/historial_citas.css" />
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top"
+            style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.75);">
+            <div class="container">
+                <!-- IZQUIERDA: LOGO + NOMBRE -->
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="img/900.jpg" alt="Logo" height="55" class="me-2 rounded-circle shadow">
+                    <span class="fw-semibold">Serranos's Barber</span>
+                </a>
+
+                <!-- CENTRO: PEDIR CITA CENTRADO -->
+                <div class="position-absolute start-50 translate-middle-x">
+                    <a class="btn btn-outline-secondary fw-bold px-4 py-2 rounded-pill" href="gestion_citas.html">
+                        <i class="fa-solid fa-scissors me-2"></i> Pedir Cita
+                    </a>
+                </div>
+
+                <!-- BOTÓN RESPONSIVE -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- MENÚ -->
+                <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+                    <ul class="navbar-nav align-items-center">
+                        <!-- LINKS SI NO HAY SESIÓN -->
+                        <div id="authLinks">
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar
+                                    sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i>
+                                    Registrarse</a>
+                            </li>
+                        </div>
+
+                        <!-- LINKS SI HAY SESIÓN -->
+                        <div id="userLinks" style="display: none;">
+                            <span class="navbar-text text-white" style="font-size: 0.9rem; padding: 8px 15px;">
+                                Hola, <span id="userName"></span>
+                            </span>
+
+                            <!-- Dropdown para Historial de Citas -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Mi Cuenta
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="historial_citas.html"
+                                            id="historialCitasLink">Mis Citas</a></li>
+                                    <li><a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar
+                                            sesión</a></li>
+                                </ul>
+                            </li>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="table-container">
+        <table id="tabla-citas">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Teléfono</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Servicio</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="historial-citas">
+                <tr>
+                    <td colspan="7" class="loading">Cargando citas...</td>
+                </tr>
+            </tbody>
+        </table>
+        <p id="mensaje-error" class="error-message" style="display:none;"></p>
+    </div>
+
+    <script src="./js/historial_citas.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+body {
+    background-image: url('../img/pexels-rdne-7697715.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Hero section */
+.hero {
+    height: 80vh;
+    /* Reducimos la altura del hero */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    margin-bottom: 0;
+    /* Ajustar el margen inferior */
+}
+
+/* Reducir el padding del overlay para acercar el texto */
+.hero-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 30px 20px;
+    /* Reducido de 60px a 30px */
+    border-radius: 15px;
+}
+
+h1.display-4 {
+    margin-bottom: 10px;
+    /* Reducir el espacio debajo del título */
+}
+
+p.lead {
+    margin-bottom: 20px;
+    /* Reducir el espacio debajo del subtítulo */
+}
+
+/* Ajuste entre Hero y los Cards */
+main.container {
+    background-color: transparent !important;
+    /* Eliminamos fondo blanco */
+    backdrop-filter: none;
+    color: white;
+    margin-top: -20px;
+    /* Reducir el espacio entre hero y los cards */
+}
+
+h2.text-center {
+    margin-top: 20px;
+    /* Aseguramos que "Nuestros Servicios" esté más cerca */
+    margin-bottom: 30px;
+    /* Reducimos el margen inferior */
+}
+
+/* Card Container */
+.card {
+    background-color: rgba(0, 0, 0, 0.75);
+    /* Fondo más oscuro para cards */
+    color: white;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Aseguramos que el contenido ocupe el espacio disponible */
+    height: 100%;
+    /* Igualar la altura de todos los cards */
+}
+
+/* Card body */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Asegura que los contenidos se distribuyan uniformemente */
+}
+
+/* Card Title */
+.card-title {
+    font-weight: 700;
+}
+
+/* Card Button */
+.btn-dark {
+    background-color: #343a40;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.btn-dark:hover {
+    background-color: #000;
+    color: #ffc107;
+}
+
+/* Asegura que las imágenes tengan la misma altura y se ajusten */
+.card-img-top {
+    width: 100%;
+    height: 250px;
+    /* Establecemos una altura fija para las imágenes */
+    object-fit: cover;
+    /* Mantiene la relación de aspecto de las imágenes sin distorsionarlas */
+    border-radius: 0.25rem;
+}
+
+/* Ajustamos el contenedor para hacer los cards iguales */
+.row.g-4 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-md-4 {
+    display: flex;
+    justify-content: center;
+    /* Centra los cards en la fila */
+}
+
+/* Ajustes en el Hero */
+.hero {
+    height: 80vh;
+    /* Mantener el Hero más compacto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+/* Ajuste entre Hero y los Cards */
+main.container {
+    background-color: transparent !important;
+    backdrop-filter: none;
+    color: white;
+    margin-top: -20px;
+}
+
+h2.text-center {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* Partículas en el fondo */
+#tsparticles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.carousel-container {
+    position: relative;
+    max-width: 800px;
+    margin: 30px auto;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.carousel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    overflow: hidden;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 350px;
+    /* ajusta este valor según lo que necesites */
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.carousel-slide img:hover {
+    transform: scale(1.05);
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 50%;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-container:hover .carousel-btn {
+    opacity: 1;
+}
+
+.carousel-btn:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+.carousel-btn.prev {
+    left: 15px;
+}
+
+.carousel-btn.next {
+    right: 15px;
+}
+
+.info-peluqueria {
+    background-color: #111;
+    color: #fff;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.info-peluqueria h2 {
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+}
+
+.info-peluqueria .descripcion {
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto 30px auto;
+    line-height: 1.6;
+}
+
+.info-peluqueria .detalles {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 600px;
+    text-align: left;
+}
+
+.info-peluqueria .detalles li {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.info-peluqueria a {
+    color: #e0b96c;
+    text-decoration: none;
+}
+
+.info-peluqueria a:hover {
+    text-decoration: underline;
+}
+
+.mapa {
+    margin-top: 40px;
+}
+
+.mapa h3 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.info-peluqueria-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  background-color: #111;
+  color: #fff;
+  padding: 50px 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.mapa-columna {
+  flex: 1 1 350px;
+  min-width: 300px;
+  max-width: 500px;
+  height: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.mapa-columna iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.texto-columna {
+  flex: 1 1 400px;
+  max-width: 600px;
+}
+
+.texto-columna h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.texto-columna .descripcion {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.texto-columna .detalles {
+  list-style: none;
+  padding: 0;
+}
+
+.texto-columna .detalles li {
+  margin: 10px 0;
+}
+
+.texto-columna a {
+  color: #e0b96c;
+  text-decoration: none;
+}
+
+.texto-columna a:hover {
+  text-decoration: underline;
+}
