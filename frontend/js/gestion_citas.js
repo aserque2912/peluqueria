@@ -15,6 +15,14 @@ fetch('../backend/check_session.php')
         window.location.href = 'login.html';
     });
 
+// Limita la fecha mínima al día de hoy en el selector
+document.addEventListener('DOMContentLoaded', function () {
+    const inputFecha = document.getElementById('fecha');
+    if (inputFecha) {
+        inputFecha.min = new Date().toISOString().split('T')[0];
+    }
+});
+
 document.getElementById('fecha').addEventListener('change', function () {
     const fecha = this.value;
     const servicio = document.getElementById('servicio').value;
@@ -64,13 +72,22 @@ document.getElementById('fecha').addEventListener('change', function () {
     }
 });
 
-
 document.getElementById('citaForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
     const fecha = document.getElementById('fecha').value;
     const hora = document.getElementById('hora').value;
     const servicio = document.getElementById('servicio').value;
+
+    // ----------- VALIDACIÓN DE FECHA/HORA PASADA -----------
+    const fechaHora = new Date(`${fecha}T${hora}`);
+    const ahora = new Date();
+
+    if (fechaHora < ahora) {
+        alert('No puedes reservar una cita en una fecha/hora pasada.');
+        return; // Bloquea el envío
+    }
+    // -------------------------------------------------------
 
     console.log("Fecha:", fecha);
     console.log("Hora:", hora);
@@ -104,9 +121,6 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
     } else {
         enviarReserva(fecha, hora, servicio);
     }
-
-
-
 });
 
 function enviarReserva(fecha, hora, servicio) {
@@ -143,4 +157,3 @@ function enviarReserva(fecha, hora, servicio) {
             alert("No se pudo contactar con el servidor.");
         });
 }
-

@@ -47,7 +47,6 @@ function obtenerHorasOcupadas($fecha) {
     return $horasOcupadas;
 }
 
-
 $fecha    = $data[ 'fecha' ] ?? null;
 $hora     = $data[ 'hora' ] ?? null;
 $servicio = $data[ 'servicio' ] ?? null;
@@ -65,6 +64,19 @@ if ( !$fecha || !$hora || !$servicio ) {
     ] );
     exit;
 }
+
+// ----------- Validación: No permitir cita en el pasado -----------
+$ahora = new DateTime();
+
+if ($fechaHoraCita <= $ahora) {
+    echo json_encode([
+        'success' => false,
+        'error' => 'No puedes reservar una cita en una fecha/hora pasada'
+    ]);
+    exit;
+}
+
+// ---------------------------------------------------------------
 
 if ($servicio === 'tinte') {
     $horaDateTime = new DateTime("$fecha $hora");
@@ -93,7 +105,6 @@ if ($servicio === 'tinte') {
         }
     }
 }
-
 
 $nombre   = $_SESSION[ 'usuario' ][ 'nombre' ]   ?? 'Anónimo';
 $telefono = $_SESSION[ 'usuario' ][ 'telefono' ] ?? '';
@@ -134,3 +145,4 @@ if ( $stmtInsert->execute() ) {
 $stmtCheck->close();
 $stmtInsert->close();
 $conexion->close();
+?>
