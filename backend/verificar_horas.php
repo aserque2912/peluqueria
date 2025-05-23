@@ -75,7 +75,7 @@ $horasOcupadas = obtenerHorasOcupadas($fecha);
 if (in_array($hora1, $horasOcupadas) || in_array($hora2, $horasOcupadas)) {
     echo json_encode([
         'success' => false,
-        'error' => 'Las 2 horas seleccionadas no están disponibles.',
+        'error' => 'Las 2 horas siguientes a la cita no están disponibles.',
         'debug' => [
             'script' => 'verificar_horas.php',
             'hora1' => $hora1,

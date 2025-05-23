@@ -1,6 +1,5 @@
 // Esperamos que la página cargue completamente
 document.addEventListener('DOMContentLoaded', function () {
-    // Llamamos a la función para cargar las citas
     cargarHistorialCitas();
 });
 
@@ -19,11 +18,8 @@ function cargarHistorialCitas() {
         credentials: 'same-origin'
     })
         .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('No se pudo obtener el historial de citas');
-            }
+            if (response.ok) return response.json();
+            throw new Error('No se pudo obtener el historial de citas');
         })
         .then(data => {
             if (data.error) {
@@ -38,8 +34,6 @@ function cargarHistorialCitas() {
                 const ahora = new Date();
 
                 data.forEach(cita => {
-                    console.log('Fecha raw:', cita.fecha, 'Hora raw:', cita.hora);
-
                     let fechaCita;
                     if (cita.fecha.includes('/')) {
                         const partes = cita.fecha.split('/');
@@ -51,20 +45,17 @@ function cargarHistorialCitas() {
                         return;
                     }
 
-                    console.log('Fecha cita convertida:', fechaCita, 'Ahora:', ahora, 'Mostrar botón:', fechaCita > ahora);
-
                     const fila = document.createElement('tr');
-
                     fila.innerHTML = `
-                    <td>${cita.id}</td>
-                    <td>${cita.nombre_cliente}</td>
-                    <td>${cita.telefono}</td>
-                    <td>${cita.fecha}</td>
-                    <td>${cita.hora}</td>
-                    <td>${cita.servicio}</td>
-                    <td>${cita.estado}</td>
-                    <td class="accion"></td>
-                `;
+                        <td>${cita.id}</td>
+                        <td>${cita.nombre_cliente}</td>
+                        <td>${cita.telefono}</td>
+                        <td>${cita.fecha}</td>
+                        <td>${cita.hora}</td>
+                        <td>${cita.servicio}</td>
+                        <td>${cita.estado}</td>
+                        <td class="accion"></td>
+                    `;
 
                     if (fechaCita > ahora) {
                         const tdAccion = fila.querySelector('.accion');
@@ -72,16 +63,14 @@ function cargarHistorialCitas() {
                         btnEliminar.classList.add('btn-eliminar');
                         btnEliminar.title = 'Eliminar cita';
                         btnEliminar.innerHTML = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zM5 4v9h6V4H5z"/>
-  </svg>
-`;
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zM5 4v9h6V4H5z"/>
+                          </svg>
+                        `;
                         btnEliminar.addEventListener('click', () => eliminarCita(cita.id));
                         tdAccion.appendChild(btnEliminar);
-
                     }
-
                     tbody.appendChild(fila);
                 });
             } else {
@@ -92,58 +81,60 @@ function cargarHistorialCitas() {
         })
         .catch(error => {
             tbody.innerHTML = '';
-            mensajeError.style.display = 'block';
-            mensajeError.textContent = `Error al cargar las citas: ${error.message}`;
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al cargar',
+                text: `Error al cargar las citas: ${error.message}`,
+                confirmButtonColor: '#d33'
+            });
         });
 }
-
 
 function eliminarCita(idCita) {
-    if (!confirm('¿Seguro que quieres eliminar esta cita?')) return;
-
-    fetch('../backend/eliminar_cita.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',  // <--- clave para enviar cookies/sesión
-        body: JSON.stringify({ id: idCita })
-    })
-        .then(res => res.json())
-        .then(data => {
-            console.log('Respuesta eliminar cita:', data); // <--- para depurar
-            if (data.success) {
-                alert('Cita eliminada correctamente');
-                cargarHistorialCitas();
-            } else {
-                alert('Error al eliminar cita: ' + (data.message || 'Error desconocido'));
-            }
-        })
-        .catch(err => {
-            alert('Error de conexión: ' + err.message);
-        });
+    Swal.fire({
+        title: '¿Seguro que quieres eliminar esta cita?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#aaa',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('../backend/eliminar_cita.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ id: idCita })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Eliminado',
+                            text: 'Cita eliminada correctamente.',
+                            confirmButtonColor: '#3085d6'
+                        }).then(() => {
+                            cargarHistorialCitas();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Error desconocido',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de conexión',
+                        text: err.message,
+                        confirmButtonColor: '#d33'
+                    });
+                });
+        }
+    });
 }
-function eliminarCita(idCita) {
-    if (!confirm('¿Seguro que quieres eliminar esta cita?')) return;
-
-    fetch('../backend/eliminar_cita.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',  // <--- MUY IMPORTANTE
-        body: JSON.stringify({ id: idCita })
-    })
-        .then(res => res.json())
-        .then(data => {
-            console.log('Respuesta eliminar cita:', data);
-            if (data.success) {
-                alert('Cita eliminada correctamente');
-                cargarHistorialCitas();
-            } else {
-                alert('Error al eliminar cita: ' + (data.message || 'Error desconocido'));
-            }
-        })
-        .catch(err => {
-            alert('Error de conexión: ' + err.message);
-        });
-}
-
-
-
