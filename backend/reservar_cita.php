@@ -1,31 +1,34 @@
 <?php
-header( 'Content-Type: application/json; charset=utf-8' );
-if ( session_status() === PHP_SESSION_NONE ) {
+header('Content-Type: application/json; charset=utf-8');
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$input = trim( file_get_contents( 'php://input' ) );
-$data = json_decode( $input, true );
+// Zona horaria explícita para coherencia
+date_default_timezone_set('Europe/Madrid'); // CAMBIA según tu zona si hace falta
 
-if ( $data === null ) {
-    echo json_encode( [
+$input = trim(file_get_contents('php://input'));
+$data = json_decode($input, true);
+
+if ($data === null) {
+    echo json_encode([
         'success' => false,
         'error' => 'JSON inválido o no recibido.',
-        'debug' => [ 'raw_input' => $input ]
-    ] );
+        'debug' => ['raw_input' => $input]
+    ]);
     exit;
 }
 
-if ( $_SERVER[ 'REQUEST_METHOD' ] !== 'POST' ) {
-    echo json_encode( [
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode([
         'success' => false,
         'error' => 'Esta ruta requiere una solicitud POST.',
-        'debug' => [ 'method' => $_SERVER[ 'REQUEST_METHOD' ] ]
-    ] );
+        'debug' => ['method' => $_SERVER['REQUEST_METHOD']]
+    ]);
     exit;
 }
 
-include_once( 'config.php' );
+include_once('config.php');
 
 function obtenerHorasOcupadas($fecha) {
     $conexion = obtenerConexion();
@@ -47,12 +50,12 @@ function obtenerHorasOcupadas($fecha) {
     return $horasOcupadas;
 }
 
-$fecha    = $data[ 'fecha' ] ?? null;
-$hora     = $data[ 'hora' ] ?? null;
-$servicio = $data[ 'servicio' ] ?? null;
+$fecha    = $data['fecha']    ?? null;
+$hora     = $data['hora']     ?? null;
+$servicio = $data['servicio'] ?? null;
 
-if ( !$fecha || !$hora || !$servicio ) {
-    echo json_encode( [
+if (!$fecha || !$hora || !$servicio) {
+    echo json_encode([
         'success' => false,
         'error' => 'Faltan parámetros.',
         'debug' => [
@@ -61,22 +64,26 @@ if ( !$fecha || !$hora || !$servicio ) {
             'servicio' => $servicio,
             '_data' => $data,
         ]
-    ] );
+    ]);
     exit;
 }
 
+// --- VALIDACIÓN DE FECHA/HORA PASADA ---
+$hora_normalizada = substr($hora, 0, 5); // Quita segundos si hay
+$fechaHoraCita = DateTime::createFromFormat('Y-m-d H:i', "$fecha $hora_normalizada");
 $ahora = new DateTime();
 
-if ($fechaHoraCita <= $ahora) {
+if (!$fechaHoraCita || $fechaHoraCita <= $ahora) {
     echo json_encode([
         'success' => false,
         'error' => 'No puedes reservar una cita en una fecha/hora pasada'
     ]);
     exit;
 }
+// --- FIN VALIDACIÓN ---
 
 if ($servicio === 'tinte') {
-    $horaDateTime = new DateTime("$fecha $hora");
+    $horaDateTime = new DateTime("$fecha $hora_normalizada");
     $horasOcupadas = obtenerHorasOcupadas($fecha);
 
     $bloques = [];
@@ -103,40 +110,40 @@ if ($servicio === 'tinte') {
     }
 }
 
-$nombre   = $_SESSION[ 'usuario' ][ 'nombre' ]   ?? 'Anónimo';
-$telefono = $_SESSION[ 'usuario' ][ 'telefono' ] ?? '';
-$user_id  = $_SESSION[ 'usuario' ][ 'id' ]       ?? 0;
+$nombre   = $_SESSION['usuario']['nombre']   ?? 'Anónimo';
+$telefono = $_SESSION['usuario']['telefono'] ?? '';
+$user_id  = $_SESSION['usuario']['id']       ?? 0;
 
 $conexion = obtenerConexion();
 
 $sqlCheck = 'SELECT * FROM citas WHERE fecha = ? AND hora = ?';
-$stmtCheck = $conexion->prepare( $sqlCheck );
-$stmtCheck->bind_param( 'ss', $fecha, $hora );
+$stmtCheck = $conexion->prepare($sqlCheck);
+$stmtCheck->bind_param('ss', $fecha, $hora_normalizada);
 $stmtCheck->execute();
 $result = $stmtCheck->get_result();
 
-if ( $result->num_rows > 0 ) {
-    echo json_encode( [
+if ($result->num_rows > 0) {
+    echo json_encode([
         'success' => false,
         'error' => 'La hora ya está ocupada.',
-        'debug' => [ 'fecha' => $fecha, 'hora' => $hora ]
-    ] );
+        'debug' => ['fecha' => $fecha, 'hora' => $hora_normalizada]
+    ]);
     exit;
 }
 
 $sqlInsert = "INSERT INTO citas (user_id, nombre_cliente, telefono, fecha, hora, servicio)
               VALUES (?, ?, ?, ?, ?, ?)";
-$stmtInsert = $conexion->prepare( $sqlInsert );
-$stmtInsert->bind_param( 'isssss', $user_id, $nombre, $telefono, $fecha, $hora, $servicio );
+$stmtInsert = $conexion->prepare($sqlInsert);
+$stmtInsert->bind_param('isssss', $user_id, $nombre, $telefono, $fecha, $hora_normalizada, $servicio);
 
-if ( $stmtInsert->execute() ) {
-    echo json_encode( [ 'success' => true ] );
+if ($stmtInsert->execute()) {
+    echo json_encode(['success' => true]);
 } else {
-    echo json_encode( [
+    echo json_encode([
         'success' => false,
         'error' => 'Error al guardar la cita.',
-        'debug' => [ 'error_sql' => $stmtInsert->error ]
-    ] );
+        'debug' => ['error_sql' => $stmtInsert->error]
+    ]);
 }
 
 $stmtCheck->close();

@@ -11,8 +11,12 @@ fetch('../backend/check_session.php')
         }
     })
     .catch(error => {
-        console.error('Error al verificar la sesión:', error);
-        window.location.href = 'login.html';
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de sesión',
+            text: 'Error al verificar la sesión. Por favor inicia sesión de nuevo.',
+            confirmButtonColor: '#d33'
+        }).then(() => window.location.href = 'login.html');
     });
 
 // Limita la fecha mínima al día de hoy en el selector
@@ -67,7 +71,12 @@ document.getElementById('fecha').addEventListener('change', function () {
                 }
             })
             .catch(error => {
-                console.error('Error al obtener horas disponibles:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al obtener horas disponibles.',
+                    confirmButtonColor: '#d33'
+                });
             });
     }
 });
@@ -86,18 +95,23 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
     if (fechaHora < ahora) {
         Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: 'Fecha/Hora inválida',
             text: 'No puedes reservar en una hora pasada.',
             confirmButtonColor: '#d33'
         });
-
         return; // Bloquea el envío
     }
     // -------------------------------------------------------
 
-    console.log("Fecha:", fecha);
-    console.log("Hora:", hora);
-    console.log("Servicio:", servicio);
+    if (!fecha || !hora || !servicio) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: 'Completa todos los campos antes de continuar.',
+            confirmButtonColor: '#f1c40f'
+        });
+        return;
+    }
 
     if (servicio === 'tinte') {
         const horaDateTime = new Date(`${fecha}T${hora}`);
@@ -108,21 +122,28 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
         const h2 = horaPlus2.toTimeString().slice(0, 5);
 
         const url = `../backend/verificar_horas.php?fecha=${encodeURIComponent(fecha)}&hora1=${encodeURIComponent(h1)}&hora2=${encodeURIComponent(h2)}&nocache=${Date.now()}`;
-        console.log("URL verificar horas:", url);
 
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log("Respuesta verificación:", data);
                 if (!data.success) {
-                    alert(`Error en ${data.debug?.script || 'verificar_horas.php'}: ${data.error}`);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Tinte no disponible',
+                        html: `Error en <b>${data.debug?.script || 'verificar_horas.php'}</b>:<br>${data.error}`,
+                        confirmButtonColor: '#d33'
+                    });
                     return;
                 }
                 enviarReserva(fecha, hora, servicio);
             })
             .catch(error => {
-                console.error("Error al verificar horas:", error);
-                alert("Error verificando la disponibilidad. Intenta de nuevo.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error verificando la disponibilidad. Intenta de nuevo.',
+                    confirmButtonColor: '#d33'
+                });
             });
     } else {
         enviarReserva(fecha, hora, servicio);
@@ -130,7 +151,6 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
 });
 
 function enviarReserva(fecha, hora, servicio) {
-    console.log("Llamando a reservar_cita.php con:", { fecha, hora, servicio });
     fetch('../backend/reservar_cita.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -138,7 +158,6 @@ function enviarReserva(fecha, hora, servicio) {
     })
         .then(response => response.text())
         .then(text => {
-            console.log("Respuesta cruda:", text);
             try {
                 const data = JSON.parse(text);
 
@@ -148,23 +167,33 @@ function enviarReserva(fecha, hora, servicio) {
                         title: '¡Cita reservada!',
                         text: 'Tu cita ha sido registrada correctamente.',
                         confirmButtonColor: '#3085d6'
+                    }).then(() => {
+                        window.location.href = '../frontend/index.html';
                     });
-                    window.location.href = '../frontend/index.html';
                 } else {
-                    if (data.debug && data.debug.script) {
-                        alert(`Error en ${data.debug.script}: ${data.error}`);
-                    } else {
-                        alert(`Error: ${data.error}`);
-                    }
-                    console.error("Depuración:", data.debug);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al reservar',
+                        html: `Ocurrió un problema:<br><b>${data.error}</b>`,
+                        confirmButtonColor: '#d33'
+                    });
                 }
             } catch (e) {
                 console.error("Error al parsear JSON:", e);
-                alert("Ocurrió un error inesperado. Revisa consola.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error inesperado',
+                    text: 'Ocurrió un error inesperado. Revisa consola.',
+                    confirmButtonColor: '#d33'
+                });
             }
         })
         .catch(error => {
-            console.error('Error en la solicitud:', error);
-            alert("No se pudo contactar con el servidor.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Sin conexión',
+                text: 'No se pudo contactar con el servidor.',
+                confirmButtonColor: '#d33'
+            });
         });
 }
