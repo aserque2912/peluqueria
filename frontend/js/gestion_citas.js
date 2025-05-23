@@ -84,7 +84,13 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
     const ahora = new Date();
 
     if (fechaHora < ahora) {
-        alert('No puedes reservar una cita en una fecha/hora pasada.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No puedes reservar en una hora pasada.',
+            confirmButtonColor: '#d33'
+        });
+
         return; // Bloquea el envío
     }
     // -------------------------------------------------------
@@ -137,7 +143,12 @@ function enviarReserva(fecha, hora, servicio) {
                 const data = JSON.parse(text);
 
                 if (data.success) {
-                    alert("Cita reservada con éxito.");
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Cita reservada!',
+                        text: 'Tu cita ha sido registrada correctamente.',
+                        confirmButtonColor: '#3085d6'
+                    });
                     window.location.href = '../frontend/index.html';
                 } else {
                     if (data.debug && data.debug.script) {

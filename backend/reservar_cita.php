@@ -65,7 +65,6 @@ if ( !$fecha || !$hora || !$servicio ) {
     exit;
 }
 
-// ----------- Validación: No permitir cita en el pasado -----------
 $ahora = new DateTime();
 
 if ($fechaHoraCita <= $ahora) {
@@ -75,8 +74,6 @@ if ($fechaHoraCita <= $ahora) {
     ]);
     exit;
 }
-
-// ---------------------------------------------------------------
 
 if ($servicio === 'tinte') {
     $horaDateTime = new DateTime("$fecha $hora");
