@@ -4,6 +4,22 @@ fetch('../backend/check_session.php')
         if (data.loggedIn) {
             // Si el usuario está logueado
             document.getElementById('authLinks').style.display = 'none'; // Ocultamos los links de autenticación
+            // Mostrar enlace admin solo si rol es administrador
+            if (data.usuario.rol === 'administrador') {
+                const dropdownMenu = document.querySelector('#userLinks ul.dropdown-menu');
+                if (dropdownMenu && !document.getElementById('adminCitasLink')) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a class="dropdown-item" href="../frontend/admin_citas.html" id="adminCitasLink">Ver todas las citas</a>`;
+
+                    // Insertar después de "Mis Citas" (primer <li>)
+                    const misCitasLi = dropdownMenu.querySelector('li');
+                    if (misCitasLi && misCitasLi.nextSibling) {
+                        dropdownMenu.insertBefore(li, misCitasLi.nextSibling);
+                    } else {
+                        dropdownMenu.appendChild(li);
+                    }
+                }
+            }
 
             // Forzamos la visibilidad de #userLinks
             const userLinks = document.getElementById('userLinks');
