@@ -4,7 +4,7 @@ fetch('../backend/check_session.php')
     .then(data => {
         if (data.loggedIn) {
             document.getElementById('authLinks').style.display = 'none';
-            document.getElementById('userLinks').style.display = 'block';
+            document.getElementById('userLinks').style.display = 'flex';
             document.getElementById('userName').textContent = data.usuario.nombre;
         } else {
             window.location.href = 'login.html';
@@ -130,9 +130,10 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Tinte no disponible',
-                        html: `Error en <b>${data.debug?.script || 'verificar_horas.php'}</b>:<br>${data.error}`,
+                        html: data.error || 'No puedes reservar un tinte porque las 2 horas siguientes a la cita no están disponibles.',
                         confirmButtonColor: '#d33'
                     });
+
                     return;
                 }
                 enviarReserva(fecha, hora, servicio);
@@ -172,9 +173,9 @@ function enviarReserva(fecha, hora, servicio) {
                     });
                 } else {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error al reservar',
-                        html: `Ocurrió un problema:<br><b>${data.error}</b>`,
+                        icon: 'warning',
+                        title: 'Horario no disponible',
+                        html: `<b>${data.error}</b>`,
                         confirmButtonColor: '#d33'
                     });
                 }

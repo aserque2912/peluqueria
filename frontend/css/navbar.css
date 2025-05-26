@@ -52,3 +52,9 @@
     font-weight: 600;
     color: #ffffff !important;
 }
+
+.user-dropdown-container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}

@@ -5,7 +5,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Zona horaria explícita para coherencia
-date_default_timezone_set('Europe/Madrid'); // CAMBIA según tu zona si hace falta
+date_default_timezone_set('Europe/Madrid'); // Cambia si tu negocio no es en España
+
+define('HORA_CIERRE', '20:00'); // Hora de cierre de la peluquería
 
 $input = trim(file_get_contents('php://input'));
 $data = json_decode($input, true);
@@ -86,11 +88,28 @@ if ($servicio === 'tinte') {
     $horaDateTime = new DateTime("$fecha $hora_normalizada");
     $horasOcupadas = obtenerHorasOcupadas($fecha);
 
+    $horaCierre = new DateTime("$fecha " . HORA_CIERRE);
     $bloques = [];
     for ($i = 1; $i <= 4; $i++) {
         $bloque = clone $horaDateTime;
         $bloque->modify("+".($i * 30)." minutes");
         $bloques[] = $bloque->format('H:i');
+
+        // ----------- Validar que ningún bloque se pase de la hora de cierre -----------
+        if ($bloque > $horaCierre) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'El servicio del tinte dura 2 horas aprox y no puedes hacer una reserva para un servicio que se extienda más allá de la hora de cierre (20:00).',
+                'debug' => [
+                    'hora_inicial' => $hora,
+                    'bloques_bloqueados' => $bloques,
+                    'hora_cierre' => HORA_CIERRE,
+                    'bloque_fuera_horario' => $bloque->format('H:i')
+                ]
+            ]);
+            exit;
+        }
+        // ---------------------------------------------------------------------------
     }
 
     foreach ($bloques as $bloque) {

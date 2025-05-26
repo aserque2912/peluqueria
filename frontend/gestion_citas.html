@@ -48,32 +48,31 @@
             <!-- LINKS SI NO HAY SESIÓN -->
             <div id="authLinks">
               <li class="nav-item">
-                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar
-                  sesión</a>
+                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar sesión</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i>
-                  Registrarse</a>
+                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i> Registrarse</a>
               </li>
             </div>
 
             <!-- LINKS SI HAY SESIÓN -->
-            <div id="userLinks" style="display: none;">
+            <li id="userLinks" style="display: none; display:flex; align-items:center; gap:10px;">
               <span class="navbar-text text-white" style="font-size: 0.9rem; padding: 8px 15px;">
                 Hola, <span id="userName"></span>
               </span>
-              <li class="nav-item dropdown">
+              <div>
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                   aria-expanded="false">
                   Mi Cuenta
                 </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                   <li><a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis Citas</a></li>
                   <li><a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar sesión</a></li>
                 </ul>
-              </li>
-            </div>
+              </div>
+            </li>
           </ul>
+
         </div>
       </div>
     </nav>
