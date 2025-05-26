@@ -77,7 +77,6 @@
             </div>
         </nav>
     </header>
-    <h1>Editar Cita</h1>
     <form id="form-editar-cita">
         <input type="hidden" id="cita-id" />
 
@@ -91,7 +90,10 @@
         <input type="date" id="fecha" name="fecha" required />
 
         <label for="hora">Hora:</label>
-        <input type="time" id="hora" name="hora" required />
+        <select id="hora" name="hora" required>
+            <!-- opciones aquí -->
+        </select>
+
 
         <label for="servicio">Servicio:</label>
         <select id="servicio" name="servicio" required>

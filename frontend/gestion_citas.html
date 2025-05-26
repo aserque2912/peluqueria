@@ -23,7 +23,7 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top"
       style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.75);">
-      <div class="container position-relative">
+      <div class="container">
         <!-- IZQUIERDA: LOGO + NOMBRE -->
         <a class="navbar-brand d-flex align-items-center" href="index.html">
           <img src="img/900.jpg" alt="Logo" height="55" class="me-2 rounded-circle shadow">
@@ -42,42 +42,46 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- DERECHA: LOGIN / USER -->
+        <!-- MENÚ -->
         <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
           <ul class="navbar-nav align-items-center">
-            <!-- LINKS SI NO HAY SESIÓN -->
+            <!-- Aparece si no hay una sesión iniciada -->
             <div id="authLinks">
               <li class="nav-item">
-                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar sesión</a>
+                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar
+                  sesión</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i> Registrarse</a>
+                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i>
+                  Registrarse</a>
               </li>
             </div>
 
-            <!-- LINKS SI HAY SESIÓN -->
-            <li id="userLinks" style="display: none; display:flex; align-items:center; gap:10px;">
+            <!-- Aparece si hay una sesión iniciada -->
+            <div id="userLinks" style="display: none;">
               <span class="navbar-text text-white" style="font-size: 0.9rem; padding: 8px 15px;">
                 Hola, <span id="userName"></span>
               </span>
-              <div>
+
+              <!-- Dropdown para Historial de Citas y cerrar sesión -->
+              <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                   aria-expanded="false">
                   Mi Cuenta
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis Citas</a></li>
-                  <li><a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar sesión</a></li>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis
+                      Citas</a></li>
+                  <li><a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar
+                      sesión</a></li>
                 </ul>
-              </div>
-            </li>
+              </li>
+            </div>
           </ul>
-
         </div>
       </div>
     </nav>
   </header>
-
   <!-- FORMULARIO -->
   <main class="main-container">
     <h2>Gestionar Citas</h2>
@@ -105,10 +109,13 @@
   </main>
 
   <!-- JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="./js/gestion_citas.js"></script>
+  <script src="./js/index.js"></script>
   <!-- SweetAlert2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 
 </html>
