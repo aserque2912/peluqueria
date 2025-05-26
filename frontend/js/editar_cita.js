@@ -9,6 +9,18 @@ const inputFecha = document.getElementById('fecha');
 const selectHora = document.getElementById('hora');
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Limitar la fecha mínima a hoy para que no se puedan elegir días pasados
+  const hoy = new Date();
+  // Si quieres que no se pueda seleccionar ni hoy mismo, descomenta la siguiente línea
+  // hoy.setDate(hoy.getDate() + 1);
+
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  const fechaMinima = `${yyyy}-${mm}-${dd}`;
+
+  inputFecha.min = fechaMinima;
+
   const citaId = getQueryParam('id');
   if (!citaId) {
     mensajeDiv.textContent = "ID de cita no proporcionado";
