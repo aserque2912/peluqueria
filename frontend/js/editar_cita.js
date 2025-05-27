@@ -13,18 +13,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnVolver = document.getElementById('btnVolver');
   if (btnVolver) {
     btnVolver.addEventListener('click', () => {
-      window.location.href = 'admin_citas.html';
+      window.location.href = 'admin_citas.html'; // Cambia la ruta si es necesario
     });
   }
 
   // Limitar la fecha mínima a hoy
   const hoy = new Date();
-  // Descomenta si quieres que sea a partir de mañana
+  // Si quieres que no se pueda seleccionar ni hoy mismo, descomenta la siguiente línea
   // hoy.setDate(hoy.getDate() + 1);
+
   const yyyy = hoy.getFullYear();
   const mm = String(hoy.getMonth() + 1).padStart(2, '0');
   const dd = String(hoy.getDate()).padStart(2, '0');
   const fechaMinima = `${yyyy}-${mm}-${dd}`;
+
   inputFecha.min = fechaMinima;
 
   const citaId = getQueryParam('id');
@@ -46,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('telefono').value = data.telefono;
       document.getElementById('fecha').value = data.fecha;
 
+      // Cargar horas disponibles para la fecha de la cita
       fetch(`../backend/obtener_horas_disponibles.php?fecha=${data.fecha}`)
         .then(res => {
           if (!res.ok) throw new Error('Error al obtener horas disponibles');
@@ -53,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(dataHoras => {
           const horas = dataHoras.horas_disponibles || [];
+          console.log('Horas disponibles:', horas);
           selectHora.innerHTML = '';
 
           if (horas.length === 0) {
@@ -70,7 +74,20 @@ document.addEventListener('DOMContentLoaded', () => {
             selectHora.add(option);
           });
 
-          selectHora.value = data.hora;
+          const horaCitaOriginal = data.hora;
+          const horaCita = horaCitaOriginal ? horaCitaOriginal.trim().substring(0, 5) : '';
+          console.log('Hora cita original:', horaCitaOriginal);
+          console.log('Hora cita para select:', horaCita);
+
+          // Si la hora de la cita no está en las horas disponibles, añádela
+          if (horaCita && !horas.includes(horaCita)) {
+            const option = document.createElement('option');
+            option.value = horaCita;
+            option.text = horaCita;
+            selectHora.add(option);
+          }
+
+          selectHora.value = horaCita;
         });
 
       document.getElementById('servicio').value = data.servicio;
@@ -94,6 +111,7 @@ inputFecha.addEventListener('change', () => {
     })
     .then(dataHoras => {
       const horas = dataHoras.horas_disponibles || [];
+      console.log('Horas disponibles al cambiar fecha:', horas);
       selectHora.innerHTML = '';
 
       if (horas.length === 0) {
@@ -127,6 +145,7 @@ form.addEventListener('submit', e => {
   const fecha = document.getElementById('fecha').value;
   const hora = document.getElementById('hora').value;
 
+  // Validar que la fecha y hora no sean pasadas
   const fechaHoraSeleccionada = new Date(`${fecha}T${hora}`);
   const ahora = new Date();
 
@@ -154,20 +173,20 @@ form.addEventListener('submit', e => {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(datos)
   })
-  .then(res => {
-    if (!res.ok) throw new Error('Error al actualizar la cita');
-    return res.json();
-  })
-  .then(resp => {
-    if (resp.ok) {
-      mensajeDiv.textContent = 'Cita actualizada correctamente';
-      mensajeDiv.className = 'success-message';
-    } else {
-      throw new Error(resp.mensaje || 'Error desconocido');
-    }
-  })
-  .catch(err => {
-    mensajeDiv.textContent = err.message;
-    mensajeDiv.className = 'error-message';
-  });
+    .then(res => {
+      if (!res.ok) throw new Error('Error al actualizar la cita');
+      return res.json();
+    })
+    .then(resp => {
+      if (resp.ok) {
+        mensajeDiv.textContent = 'Cita actualizada correctamente';
+        mensajeDiv.className = 'success-message';
+      } else {
+        throw new Error(resp.mensaje || 'Error desconocido');
+      }
+    })
+    .catch(err => {
+      mensajeDiv.textContent = err.message;
+      mensajeDiv.className = 'error-message';
+    });
 });
