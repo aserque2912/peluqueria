@@ -9,16 +9,22 @@ const inputFecha = document.getElementById('fecha');
 const selectHora = document.getElementById('hora');
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Limitar la fecha mínima a hoy para que no se puedan elegir días pasados
-  const hoy = new Date();
-  // Si quieres que no se pueda seleccionar ni hoy mismo, descomenta la siguiente línea
-  // hoy.setDate(hoy.getDate() + 1);
+  // Botón Volver
+  const btnVolver = document.getElementById('btnVolver');
+  if (btnVolver) {
+    btnVolver.addEventListener('click', () => {
+      window.location.href = 'admin_citas.html';
+    });
+  }
 
+  // Limitar la fecha mínima a hoy
+  const hoy = new Date();
+  // Descomenta si quieres que sea a partir de mañana
+  // hoy.setDate(hoy.getDate() + 1);
   const yyyy = hoy.getFullYear();
   const mm = String(hoy.getMonth() + 1).padStart(2, '0');
   const dd = String(hoy.getDate()).padStart(2, '0');
   const fechaMinima = `${yyyy}-${mm}-${dd}`;
-
   inputFecha.min = fechaMinima;
 
   const citaId = getQueryParam('id');
@@ -40,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('telefono').value = data.telefono;
       document.getElementById('fecha').value = data.fecha;
 
-      // Cargar horas disponibles para la fecha de la cita
       fetch(`../backend/obtener_horas_disponibles.php?fecha=${data.fecha}`)
         .then(res => {
           if (!res.ok) throw new Error('Error al obtener horas disponibles');
@@ -48,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(dataHoras => {
           const horas = dataHoras.horas_disponibles || [];
-          console.log('Horas disponibles recibidas:', horas);
           selectHora.innerHTML = '';
 
           if (horas.length === 0) {
@@ -66,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
             selectHora.add(option);
           });
 
-          // Seleccionar la hora actual de la cita
           selectHora.value = data.hora;
         });
 
@@ -91,7 +94,6 @@ inputFecha.addEventListener('change', () => {
     })
     .then(dataHoras => {
       const horas = dataHoras.horas_disponibles || [];
-      console.log('Horas disponibles recibidas al cambiar fecha:', horas);
       selectHora.innerHTML = '';
 
       if (horas.length === 0) {
@@ -102,7 +104,6 @@ inputFecha.addEventListener('change', () => {
         return;
       }
 
-      // Opción vacía para que el usuario elija
       const defaultOption = document.createElement('option');
       defaultOption.value = '';
       defaultOption.text = '-- Selecciona una hora --';
@@ -126,7 +127,6 @@ form.addEventListener('submit', e => {
   const fecha = document.getElementById('fecha').value;
   const hora = document.getElementById('hora').value;
 
-  // Validar que la fecha y hora no sean pasadas
   const fechaHoraSeleccionada = new Date(`${fecha}T${hora}`);
   const ahora = new Date();
 
