@@ -1,5 +1,5 @@
 // Esperamos que la página cargue completamente
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     cargarHistorialCitas();
 });
 
@@ -13,10 +13,10 @@ function cargarHistorialCitas() {
     tbody.innerHTML = `<tr><td colspan="8" class="loading">Cargando citas...</td></tr>`;
 
     fetch('../backend/obtener_historial.php', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin'
-    })
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin'
+        })
         .then(response => {
             if (response.ok) return response.json();
             throw new Error('No se pudo obtener el historial de citas');
@@ -62,15 +62,11 @@ function cargarHistorialCitas() {
                         const btnEliminar = document.createElement('button');
                         btnEliminar.classList.add('btn-eliminar');
                         btnEliminar.title = 'Eliminar cita';
-                        btnEliminar.innerHTML = `
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zM5 4v9h6V4H5z"/>
-                          </svg>
-                        `;
+                        btnEliminar.innerHTML = `<i class="fa-regular fa-trash-can"></i>`;
                         btnEliminar.addEventListener('click', () => eliminarCita(cita.id));
                         tdAccion.appendChild(btnEliminar);
                     }
+
                     tbody.appendChild(fila);
                 });
             } else {
@@ -102,11 +98,11 @@ function eliminarCita(idCita) {
     }).then((result) => {
         if (result.isConfirmed) {
             fetch('../backend/eliminar_cita.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ id: idCita })
-            })
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ id: idCita })
+                })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {

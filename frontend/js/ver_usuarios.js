@@ -13,9 +13,37 @@ fetch('../backend/ver_usuarios.php')
         <td>${usuario.id}</td>
         <td>${usuario.nombre}</td>
         <td>${usuario.email}</td>
-        <td>-</td>
+        <td>
+          <button class="btn btn-sm btn-eliminar" data-id="${usuario.id}" title="Eliminar usuario">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </td>
       `;
             tbody.appendChild(tr);
+        });
+
+        // Añadir evento a botones eliminar
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const userId = btn.getAttribute('data-id');
+                if (confirm('¿Seguro que quieres eliminar este usuario?')) {
+                    fetch('../backend/eliminar_usuario.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: userId })
+                        })
+                        .then(res => res.json())
+                        .then(resp => {
+                            if (resp.ok) {
+                                alert('Usuario eliminado correctamente');
+                                btn.closest('tr').remove();
+                            } else {
+                                alert('Error al eliminar usuario: ' + resp.mensaje);
+                            }
+                        })
+                        .catch(err => alert('Error al eliminar usuario: ' + err.message));
+                }
+            });
         });
     })
     .catch(err => {
