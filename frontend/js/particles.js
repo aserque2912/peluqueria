@@ -1,40 +1,39 @@
 tsParticles.load("tsparticles", {
-    fullScreen: { enable: true, zIndex: -1 },
-    background: {
-      color: { value: "transparent" }
+  fullScreen: { enable: true, zIndex: -1 },
+  background: {
+    color: { value: "transparent" }
+  },
+  particles: {
+    number: { value: 60 },
+    color: { value: "#ffffff" },
+    shape: { type: "circle" },
+    opacity: {
+      value: 0.3,
+      random: true
     },
-    particles: {
-      number: { value: 60 },
-      color: { value: "#ffffff" },
-      shape: { type: "circle" },
-      opacity: {
-        value: 0.3,
-        random: true
-      },
-      size: {
-        value: { min: 1, max: 3 }
-      },
-      move: {
+    size: {
+      value: { min: 1, max: 3 }
+    },
+    move: {
+      enable: true,
+      speed: 1,
+      direction: "none",
+      random: true,
+      straight: false,
+      outModes: "out"
+    }
+  },
+  interactivity: {
+    events: {
+      onHover: {
         enable: true,
-        speed: 1,
-        direction: "none",
-        random: true,
-        straight: false,
-        outModes: "out"
+        mode: "repulse"
       }
     },
-    interactivity: {
-      events: {
-        onHover: {
-          enable: true,
-          mode: "repulse"
-        }
-      },
-      modes: {
-        repulse: {
-          distance: 70
-        }
+    modes: {
+      repulse: {
+        distance: 70
       }
     }
-  });
-  
+  }
+});

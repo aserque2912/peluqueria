@@ -7,6 +7,8 @@ fetch('../backend/check_session.php')
             // Mostrar enlace admin solo si rol es administrador
             if (data.usuario.rol === 'administrador') {
                 const dropdownMenu = document.querySelector('#userLinks ul.dropdown-menu');
+
+                // Enlace "Ver todas las citas"
                 if (dropdownMenu && !document.getElementById('adminCitasLink')) {
                     const li = document.createElement('li');
                     li.innerHTML = `<a class="dropdown-item" href="../frontend/admin_citas.html" id="adminCitasLink">Ver todas las citas</a>`;
@@ -17,6 +19,25 @@ fetch('../backend/check_session.php')
                         dropdownMenu.insertBefore(li, misCitasLi.nextSibling);
                     } else {
                         dropdownMenu.appendChild(li);
+                    }
+                }
+
+                // Enlace "Ver Usuarios"
+                if (dropdownMenu && !document.getElementById('verUsuariosLink')) {
+                    const liUsuarios = document.createElement('li');
+                    liUsuarios.innerHTML = `<a class="dropdown-item" href="../frontend/ver_usuarios.html" id="verUsuariosLink">Ver Usuarios</a>`;
+
+                    // Insertar justo después de "Ver todas las citas"
+                    const adminCitasLi = document.getElementById('adminCitasLink');
+                    if (adminCitasLi && adminCitasLi.parentElement) {
+                        const nextSibling = adminCitasLi.parentElement.nextSibling;
+                        if (nextSibling) {
+                            adminCitasLi.parentElement.parentElement.insertBefore(liUsuarios, nextSibling);
+                        } else {
+                            adminCitasLi.parentElement.parentElement.appendChild(liUsuarios);
+                        }
+                    } else {
+                        dropdownMenu.appendChild(liUsuarios);
                     }
                 }
             }
@@ -32,14 +53,14 @@ fetch('../backend/check_session.php')
             if (userName) {
                 setTimeout(() => {
                     userName.textContent = data.usuario.nombre; // Asignamos el nombre
-                    console.log("Nombre del usuario:", data.usuario.nombre);  // Imprimimos el nombre en la consola
-                }, 50);  // Retraso de 50ms para asegurar que el DOM esté listo
+                    console.log("Nombre del usuario:", data.usuario.nombre); // Imprimimos el nombre en la consola
+                }, 50); // Retraso de 50ms para asegurar que el DOM esté listo
             }
 
             // Configurar el enlace de cierre de sesión
             const logoutLink = document.getElementById('logoutLink');
             if (logoutLink) {
-                logoutLink.addEventListener('click', function (e) {
+                logoutLink.addEventListener('click', function(e) {
                     e.preventDefault();
                     window.location.href = '../backend/logout.php'; // Redirige a logout.php
                 });
@@ -94,4 +115,3 @@ carousel.addEventListener("mouseleave", () => {
         showSlide(index);
     }, 4000);
 });
-
