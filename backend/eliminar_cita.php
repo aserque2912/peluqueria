@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 session_start();
-include_once(__DIR__ . '/config.php');
+include_once('config.php');
 
 $conn = obtenerConexion();
 

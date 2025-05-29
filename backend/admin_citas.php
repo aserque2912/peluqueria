@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once 'config.php'; // incluye la función obtenerConexion()
+include_once ('config.php'); // incluye la función obtenerConexion()
 
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrador') {
     header('HTTP/1.1 403 Forbidden');

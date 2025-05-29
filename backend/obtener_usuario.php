@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once 'config.php';
+include_once ('config.php');
 
 // Solo admin puede acceder
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrador') {
