@@ -14,6 +14,9 @@ fetch('../backend/ver_usuarios.php')
         <td>${usuario.nombre}</td>
         <td>${usuario.email}</td>
         <td>
+          <button class="btn btn-sm btn-editar me-2" data-id="${usuario.id}" title="Editar usuario">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
           <button class="btn btn-sm btn-eliminar" data-id="${usuario.id}" title="Eliminar usuario">
             <i class="fa-regular fa-trash-can"></i>
           </button>
@@ -105,6 +108,15 @@ fetch('../backend/ver_usuarios.php')
                 });
             });
         });
+
+        // Evento editar para redirigir
+        document.querySelectorAll('.btn-editar').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const userId = btn.getAttribute('data-id');
+                window.location.href = `editar_usuario.html?id=${userId}`;
+            });
+        });
+
     })
     .catch(err => {
         Swal.fire({
