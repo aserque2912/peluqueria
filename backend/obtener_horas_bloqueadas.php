@@ -26,7 +26,7 @@ while ($row = $result->fetch_assoc()) {
     $horasBloqueadas[] = $row;
 }
 
-echo json_encode($horasBloqueadas);
+echo json_encode(['horas_bloqueadas' => $horasBloqueadas]);
 
 $stmt->close();
 $conexion->close();

@@ -28,18 +28,36 @@ function cargarHoras() {
         return;
     }
 
-    // Obtener horas bloqueadas para la fecha
-    fetch(`../backend/obtener_horas_bloqueadas.php?fecha=${fecha}`)
-        .then(res => res.json())
+    // Llamamos a obtener_horas_disponibles.php para obtener solo las horas libres (no ocupadas ni bloqueadas)
+    fetch(`../backend/obtener_horas_disponibles.php?fecha=${fecha}`)
+        .then(res => {
+            if (!res.ok) throw new Error('Error al obtener horas disponibles');
+            return res.json();
+        })
         .then(data => {
-            horasBloqueadas.clear();
-            data.forEach(h => horasBloqueadas.add(h.hora));
-            mostrarHoras(fecha);
+            const horasDisponibles = data.horas_disponibles || [];
+            horasBloqueadas.clear(); // reiniciamos selección
+
+            horasContainer.innerHTML = '';
+
+            if (horasDisponibles.length === 0) {
+                horasContainer.innerHTML = '<p>No hay horas disponibles para esta fecha.</p>';
+                return;
+            }
+
+            horasDisponibles.forEach(hora => {
+                const div = document.createElement('div');
+                div.textContent = hora;
+                div.classList.add('hora', 'disponible');
+                div.addEventListener('click', () => toggleHora(div, hora));
+                horasContainer.appendChild(div);
+            });
         })
         .catch(() => {
-            Swal.fire('Error', 'No se pudieron cargar las horas bloqueadas', 'error');
+            Swal.fire('Error', 'No se pudieron cargar las horas disponibles', 'error');
         });
 }
+
 
 function mostrarHoras(fecha) {
     horasContainer.innerHTML = '';
@@ -85,7 +103,6 @@ btnGuardar.addEventListener('click', () => {
     }
 
     if (bloquearDiaCompleto) {
-        // Bloquear día completo: bloqueamos todas las horas posibles
         Swal.fire({
             title: '¿Seguro que quieres bloquear todo el día?',
             icon: 'warning',
@@ -99,7 +116,6 @@ btnGuardar.addEventListener('click', () => {
             }
         });
     } else {
-        // Bloquear horas específicas
         if (horasBloqueadas.size === 0) {
             Swal.fire('Atención', 'Selecciona al menos una hora para bloquear.', 'info');
             return;
@@ -109,7 +125,6 @@ btnGuardar.addEventListener('click', () => {
 });
 
 function bloquearDiaCompletoFuncion(fecha, motivo) {
-    // Para bloquear el día completo, primero borramos todos los bloqueos y creamos bloqueos para cada hora
     Swal.fire({
         title: 'Bloqueando todo el día...',
         allowOutsideClick: false,
@@ -124,7 +139,6 @@ function bloquearDiaCompletoFuncion(fecha, motivo) {
         })
         .then(res => res.json())
         .then(() => {
-            // Añadimos bloqueos para todas las horas del día (08:00 a 20:00 cada 30 min)
             const horas = [];
             let inicio = new Date(`${fecha}T08:00:00`);
             const fin = new Date(`${fecha}T20:00:00`);
@@ -171,15 +185,14 @@ function bloquearHorasFuncion(fecha, motivo, horas) {
         .then(() => {
             const promesas = horas.map(hora => {
                 return fetch('../backend/bloquear_hora.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ fecha, hora, motivo })
-                    })
-                    .then(async res => {
-                        const text = await res.text();
-                        console.log('Respuesta del servidor para hora ' + hora + ':', text);
-                        return JSON.parse(text);
-                    });
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fecha, hora, motivo })
+                }).then(async res => {
+                    const text = await res.text();
+                    console.log('Respuesta del servidor para hora ' + hora + ':', text);
+                    return JSON.parse(text);
+                });
             });
             return Promise.all(promesas);
         })
