@@ -86,7 +86,7 @@ fetch('../backend/admin_citas.php')
             if (e.target.closest('.btn-editar')) {
                 const btn = e.target.closest('.btn-editar');
                 const citaId = btn.getAttribute('data-id');
-                window.location.href = `editar_cita.html?id=${citaId}`;
+                window.location.href = `editar_cita.html?id=${citaId}&origen=admin_citas.html`;
             } else if (e.target.closest('.btn-eliminar')) {
                 const btn = e.target.closest('.btn-eliminar');
                 const citaId = btn.getAttribute('data-id');

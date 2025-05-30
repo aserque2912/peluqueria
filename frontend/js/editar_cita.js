@@ -9,18 +9,12 @@ const inputFecha = document.getElementById('fecha');
 const selectHora = document.getElementById('hora');
 
 document.addEventListener('DOMContentLoaded', () => {
-    // BOTÓN VOLVER
+    // Botón Volver
     const btnVolver = document.getElementById('btnVolver');
     if (btnVolver) {
         btnVolver.addEventListener('click', () => {
-            const from = getQueryParam('from');
-            if (from === 'admin') {
-                window.location.href = 'admin_citas.html';
-            } else if (from === 'mis_citas') {
-                window.location.href = 'historial_citas.html';
-            } else {
-                window.history.back();
-            }
+            const origen = getQueryParam('origen') || 'historial_citas.html';
+            window.location.href = origen;
         });
     }
 
@@ -63,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .then(dataHoras => {
                     const horas = dataHoras.horas_disponibles || [];
-                    console.log('Horas disponibles:', horas);
                     selectHora.innerHTML = '';
 
                     if (horas.length === 0) {
@@ -83,8 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const horaCitaOriginal = data.hora;
                     const horaCita = horaCitaOriginal ? horaCitaOriginal.trim().substring(0, 5) : '';
-                    console.log('Hora cita original:', horaCitaOriginal);
-                    console.log('Hora cita para select:', horaCita);
 
                     // Si la hora de la cita no está en las horas disponibles, añádela
                     if (horaCita && !horas.includes(horaCita)) {
@@ -118,7 +109,6 @@ inputFecha.addEventListener('change', () => {
         })
         .then(dataHoras => {
             const horas = dataHoras.horas_disponibles || [];
-            console.log('Horas disponibles al cambiar fecha:', horas);
             selectHora.innerHTML = '';
 
             if (horas.length === 0) {
@@ -152,17 +142,26 @@ form.addEventListener('submit', e => {
     const fecha = document.getElementById('fecha').value;
     const hora = document.getElementById('hora').value;
 
-    // Validar que la fecha y hora no sean pasadas
     const fechaHoraSeleccionada = new Date(`${fecha}T${hora}`);
     const ahora = new Date();
 
     if (fechaHoraSeleccionada <= ahora) {
-        alert('La fecha y hora seleccionadas no pueden ser pasadas.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'La fecha y hora seleccionadas no pueden ser pasadas.',
+            confirmButtonColor: '#d33'
+        });
         return;
     }
 
     if (!hora) {
-        alert('Por favor, selecciona una hora válida.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, selecciona una hora válida.',
+            confirmButtonColor: '#d33'
+        });
         return;
     }
 
@@ -186,14 +185,25 @@ form.addEventListener('submit', e => {
         })
         .then(resp => {
             if (resp.ok) {
-                mensajeDiv.textContent = 'Cita actualizada correctamente';
-                mensajeDiv.className = 'success-message';
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cita actualizada correctamente',
+                    showClass: { popup: 'animate__animated animate__fadeInDown' },
+                    hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+                }).then(() => {
+                    const origen = getQueryParam('origen') || 'historial_citas.html';
+                    window.location.href = origen;
+                });
             } else {
                 throw new Error(resp.mensaje || 'Error desconocido');
             }
         })
         .catch(err => {
-            mensajeDiv.textContent = err.message;
-            mensajeDiv.className = 'error-message';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message,
+                confirmButtonColor: '#d33'
+            });
         });
 });
