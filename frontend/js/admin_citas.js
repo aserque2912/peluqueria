@@ -48,15 +48,27 @@ fetch('../backend/admin_citas.php')
             // Acción - botones editar y eliminar
             const tdAccion = document.createElement('td');
 
-            // Botón editar
-            const btnEditar = document.createElement('button');
-            btnEditar.classList.add('btn', 'btn-sm', 'btn-editar', 'me-2');
-            btnEditar.setAttribute('data-id', cita.id);
-            btnEditar.title = 'Editar cita';
-            btnEditar.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
-            tdAccion.appendChild(btnEditar);
+            // Calcular si la cita es actual o futura para mostrar botón editar
+            let fechaHoraCita;
+            if (cita.fecha.includes('/')) {
+                const partes = cita.fecha.split('/');
+                fechaHoraCita = new Date(`${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}T${cita.hora}`);
+            } else {
+                fechaHoraCita = new Date(`${cita.fecha}T${cita.hora}`);
+            }
+            const ahora = new Date();
 
-            // Botón eliminar
+            if (fechaHoraCita >= ahora) {
+                // Botón editar
+                const btnEditar = document.createElement('button');
+                btnEditar.classList.add('btn', 'btn-sm', 'btn-editar', 'me-2');
+                btnEditar.setAttribute('data-id', cita.id);
+                btnEditar.title = 'Editar cita';
+                btnEditar.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
+                tdAccion.appendChild(btnEditar);
+            }
+
+            // Botón eliminar siempre visible o sólo para futuras, si quieres igualarlo cambia aquí
             const btnEliminar = document.createElement('button');
             btnEliminar.classList.add('btn', 'btn-sm', 'btn-eliminar');
             btnEliminar.setAttribute('data-id', cita.id);
@@ -69,7 +81,7 @@ fetch('../backend/admin_citas.php')
             tbody.appendChild(tr);
         });
 
-        // Listener para los botones editar y eliminar (delegado en tbody)
+        // Listener para botones editar y eliminar
         tbody.addEventListener('click', e => {
             if (e.target.closest('.btn-editar')) {
                 const btn = e.target.closest('.btn-editar');

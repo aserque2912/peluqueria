@@ -3,10 +3,9 @@ body {
     background-size: cover;
     background-position: center top;
     background-attachment: fixed;
-
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding: 20px;  
+    padding: 20px;
     color: #2c3e50;
     padding-top: 100px;
 }
@@ -74,30 +73,45 @@ tbody tr:hover {
 }
 
 .btn-eliminar {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: #c0392b; /* rojo fuerte */
-  transition: color 0.3s ease;
-  padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #c0392b;
+    /* rojo fuerte */
+    transition: color 0.3s ease;
+    padding: 0;
 }
 
 .btn-eliminar:hover {
-  color: #e74c3c; /* rojo más claro al pasar el mouse */
+    color: #e74c3c;
+    /* rojo más claro al pasar el mouse */
 }
 
 
-
 /* Responsive */
-@media (max-width: 600px) {
 
+@media (max-width: 600px) {
     th,
     td {
         padding: 10px 8px;
         font-size: 13px;
     }
-
     .table-container {
         padding: 15px 10px;
     }
+}
+
+.btn-editar {
+    background-color: transparent;
+    border: none;
+    color: black;
+    padding: 5px 9px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-editar:hover,
+.btn-editar:focus {
+    color: #1e3a8a;
+    cursor: pointer;
 }

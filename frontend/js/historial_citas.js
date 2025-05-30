@@ -52,8 +52,22 @@ function cargarHistorialCitas() {
             <td class="accion"></td>
           `;
 
+                    const tdAccion = fila.querySelector('.accion');
+
                     if (fechaHoraCita >= ahora) {
-                        const tdAccion = fila.querySelector('.accion');
+                        // Botón editar sin recuadro ni fondo, solo icono
+                        const btnEditar = document.createElement('button');
+                        btnEditar.classList.add('btn-editar', 'btn', 'btn-sm', 'btn-outline-dark', 'me-2');
+                        btnEditar.style.background = 'transparent';
+                        btnEditar.style.border = 'none';
+                        btnEditar.style.padding = '0';
+                        btnEditar.style.width = 'auto';
+                        btnEditar.title = 'Editar cita';
+                        btnEditar.setAttribute('data-id', cita.id);
+                        btnEditar.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+                        tdAccion.appendChild(btnEditar);
+
+                        // Botón eliminar
                         const btnEliminar = document.createElement('button');
                         btnEliminar.classList.add('btn-eliminar', 'btn', 'btn-sm', 'btn-danger');
                         btnEliminar.title = 'Eliminar cita';
@@ -65,7 +79,14 @@ function cargarHistorialCitas() {
                     tbody.appendChild(fila);
                 });
 
-                // Añadir listener para eliminar
+                // Listeners para editar y eliminar (delegados)
+                tbody.querySelectorAll('.btn-editar').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const citaId = btn.getAttribute('data-id');
+                        window.location.href = `editar_cita.html?id=${citaId}&from=mis_citas`;
+                    });
+                });
+
                 tbody.querySelectorAll('.btn-eliminar').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const citaId = btn.getAttribute('data-id');
@@ -132,7 +153,6 @@ function cargarHistorialCitas() {
                         });
                     });
                 });
-
             } else {
                 tbody.innerHTML = '';
                 mensajeError.style.display = 'block';
