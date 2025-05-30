@@ -5,60 +5,55 @@ include_once('config.php');
 
 $conn = obtenerConexion();
 
-$response = [];
-
-$response['session_id'] = session_id();
-$response['session_usuario_id'] = $_SESSION['usuario']['id'] ?? null;
-$response['conn_is_object'] = is_object($conn);
-
 if (!$conn || !is_object($conn)) {
-    $response['error'] = 'Conexión a BD no establecida';
-    echo json_encode($response);
+    echo json_encode(['error' => 'Conexión a BD no establecida']);
     exit;
 }
 
 if (!isset($_SESSION['usuario']['id'])) {
-    $response['error'] = 'No autorizado, usuario no identificado';
-    echo json_encode($response);
+    echo json_encode(['error' => 'No autorizado, usuario no identificado']);
     exit;
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
 
 if (!isset($data['id'])) {
-    $response['error'] = 'ID de cita no recibido';
-    echo json_encode($response);
+    echo json_encode(['error' => 'ID de cita no recibido']);
     exit;
 }
 
 $idCita = intval($data['id']);
 $usuarioId = $_SESSION['usuario']['id'];
+$rolUsuario = $_SESSION['usuario']['rol'] ?? '';
 
-$sql = "DELETE FROM citas WHERE id = ? AND user_id = ?";
-$stmt = $conn->prepare($sql);
-
-if (!$stmt) {
-    $response['error'] = 'Error preparando la consulta: ' . $conn->error;
-    echo json_encode($response);
-    exit;
+if ($rolUsuario === 'administrador') {
+    $sql = "DELETE FROM citas WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        echo json_encode(['error' => 'Error preparando la consulta: ' . $conn->error]);
+        exit;
+    }
+    $stmt->bind_param('i', $idCita);
+} else {
+    $sql = "DELETE FROM citas WHERE id = ? AND usuario_id = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        echo json_encode(['error' => 'Error preparando la consulta: ' . $conn->error]);
+        exit;
+    }
+    $stmt->bind_param('ii', $idCita, $usuarioId);
 }
 
-$stmt->bind_param('ii', $idCita, $usuarioId);
-
 if (!$stmt->execute()) {
-    $response['error'] = 'Error al ejecutar la consulta: ' . $stmt->error;
-    echo json_encode($response);
+    echo json_encode(['error' => 'Error al ejecutar la consulta: ' . $stmt->error]);
     exit;
 }
 
 if ($stmt->affected_rows > 0) {
-    $response['success'] = true;
+    echo json_encode(['ok' => true]);
 } else {
-    $response['success'] = false;
-    $response['error'] = 'No se encontró la cita o no tienes permiso para eliminarla';
+    echo json_encode(['ok' => false, 'error' => 'No se encontró la cita o no tienes permiso para eliminarla']);
 }
-
-echo json_encode($response);
 
 $stmt->close();
 $conn->close();

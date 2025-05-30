@@ -1,71 +1,175 @@
 fetch('../backend/admin_citas.php')
-  .then(response => {
-    if (!response.ok) throw new Error('No autorizado o error en la consulta');
-    return response.json();
-  })
-  .then(data => {
-    const tbody = document.querySelector('#tabla-citas tbody');
-    tbody.innerHTML = '';
+    .then(response => {
+        if (!response.ok) throw new Error('No autorizado o error en la consulta');
+        return response.json();
+    })
+    .then(data => {
+        const tbody = document.querySelector('#tabla-citas tbody');
+        tbody.innerHTML = '';
 
-    data.forEach(cita => {
-      const tr = document.createElement('tr');
+        data.forEach(cita => {
+            const tr = document.createElement('tr');
 
-      // ID Cliente
-      const tdIdCliente = document.createElement('td');
-      tdIdCliente.textContent = cita.user_id;
-      tr.appendChild(tdIdCliente);
+            // ID Cliente
+            const tdIdCliente = document.createElement('td');
+            tdIdCliente.textContent = cita.user_id;
+            tr.appendChild(tdIdCliente);
 
-      // Cliente
-      const tdCliente = document.createElement('td');
-      tdCliente.textContent = cita.nombre_cliente;
-      tr.appendChild(tdCliente);
+            // Cliente
+            const tdCliente = document.createElement('td');
+            tdCliente.textContent = cita.nombre_cliente;
+            tr.appendChild(tdCliente);
 
-      // Teléfono
-      const tdTelefono = document.createElement('td');
-      tdTelefono.textContent = cita.telefono;
-      tr.appendChild(tdTelefono);
+            // Teléfono
+            const tdTelefono = document.createElement('td');
+            tdTelefono.textContent = cita.telefono;
+            tr.appendChild(tdTelefono);
 
-      // Fecha
-      const tdFecha = document.createElement('td');
-      tdFecha.textContent = cita.fecha;
-      tr.appendChild(tdFecha);
+            // Fecha
+            const tdFecha = document.createElement('td');
+            tdFecha.textContent = cita.fecha;
+            tr.appendChild(tdFecha);
 
-      // Hora
-      const tdHora = document.createElement('td');
-      tdHora.textContent = cita.hora;
-      tr.appendChild(tdHora);
+            // Hora
+            const tdHora = document.createElement('td');
+            tdHora.textContent = cita.hora;
+            tr.appendChild(tdHora);
 
-      // Servicio
-      const tdServicio = document.createElement('td');
-      tdServicio.textContent = cita.servicio;
-      tr.appendChild(tdServicio);
+            // Servicio
+            const tdServicio = document.createElement('td');
+            tdServicio.textContent = cita.servicio;
+            tr.appendChild(tdServicio);
 
-      // Estado
-      const tdEstado = document.createElement('td');
-      tdEstado.textContent = cita.estado;
-      tr.appendChild(tdEstado);
+            // Estado
+            const tdEstado = document.createElement('td');
+            tdEstado.textContent = cita.estado;
+            tr.appendChild(tdEstado);
 
-      // Acción - botón editar
-      const tdAccion = document.createElement('td');
-      const btnEditar = document.createElement('button');
-      btnEditar.textContent = 'Editar';
-      btnEditar.classList.add('btn-editar');
-      btnEditar.setAttribute('data-id', cita.id);
-      tdAccion.appendChild(btnEditar);
-      tr.appendChild(tdAccion);
+            // Acción - botones editar y eliminar
+            const tdAccion = document.createElement('td');
 
-      tbody.appendChild(tr);
+            // Botón editar
+            const btnEditar = document.createElement('button');
+            btnEditar.classList.add('btn', 'btn-sm', 'btn-editar', 'me-2');
+            btnEditar.setAttribute('data-id', cita.id);
+            btnEditar.title = 'Editar cita';
+            btnEditar.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
+            tdAccion.appendChild(btnEditar);
+
+            // Botón eliminar
+            const btnEliminar = document.createElement('button');
+            btnEliminar.classList.add('btn', 'btn-sm', 'btn-eliminar');
+            btnEliminar.setAttribute('data-id', cita.id);
+            btnEliminar.title = 'Eliminar cita';
+            btnEliminar.innerHTML = `<i class="fa-regular fa-trash-can"></i>`;
+            tdAccion.appendChild(btnEliminar);
+
+            tr.appendChild(tdAccion);
+
+            tbody.appendChild(tr);
+        });
+
+        // Listener para los botones editar y eliminar (delegado en tbody)
+        tbody.addEventListener('click', e => {
+            if (e.target.closest('.btn-editar')) {
+                const btn = e.target.closest('.btn-editar');
+                const citaId = btn.getAttribute('data-id');
+                window.location.href = `editar_cita.html?id=${citaId}`;
+            } else if (e.target.closest('.btn-eliminar')) {
+                const btn = e.target.closest('.btn-eliminar');
+                const citaId = btn.getAttribute('data-id');
+
+                Swal.fire({
+                    title: '¿Seguro que quieres eliminar esta cita?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Eliminando...',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        fetch('../backend/eliminar_cita.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: citaId })
+                            })
+                            .then(res => res.json())
+                            .then(resp => {
+                                Swal.close();
+                                if (resp.ok) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Cita eliminada',
+                                        showClass: {
+                                            popup: 'animate__animated animate__fadeInDown'
+                                        },
+                                        hideClass: {
+                                            popup: 'animate__animated animate__fadeOutUp'
+                                        }
+                                    });
+                                    btn.closest('tr').remove();
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: resp.mensaje || 'Error desconocido',
+                                        confirmButtonColor: '#d33',
+                                        showClass: {
+                                            popup: 'animate__animated animate__fadeInDown'
+                                        },
+                                        hideClass: {
+                                            popup: 'animate__animated animate__fadeOutUp'
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(err => {
+                                Swal.close();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error de conexión',
+                                    text: err.message,
+                                    confirmButtonColor: '#d33',
+                                    showClass: {
+                                        popup: 'animate__animated animate__fadeInDown'
+                                    },
+                                    hideClass: {
+                                        popup: 'animate__animated animate__fadeOutUp'
+                                    }
+                                });
+                            });
+                    }
+                });
+            }
+        });
+
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al cargar citas',
+            text: error.message,
+            confirmButtonColor: '#d33',
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        });
     });
-
-    // Listener para los botones editar
-    tbody.addEventListener('click', e => {
-      if (e.target.classList.contains('btn-editar')) {
-        const citaId = e.target.getAttribute('data-id');
-        window.location.href = `editar_cita.html?id=${citaId}`;
-      }
-    });
-
-  })
-  .catch(error => {
-    alert(error.message);
-  });
