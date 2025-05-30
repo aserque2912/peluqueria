@@ -104,7 +104,7 @@ btnGuardar.addEventListener('click', () => {
 
     if (bloquearDiaCompleto) {
         Swal.fire({
-            title: '¿Seguro que quieres bloquear todo el día?',
+            title: '¿Seguro que quieres bloquear todo el día? Se cancelarán las citas asociadas a este día.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Sí, bloquear',
@@ -126,47 +126,33 @@ btnGuardar.addEventListener('click', () => {
 
 function bloquearDiaCompletoFuncion(fecha, motivo) {
     Swal.fire({
-        title: 'Bloqueando todo el día...',
+        title: 'Bloqueando todo el día y cancelando citas...',
         allowOutsideClick: false,
         showConfirmButton: false,
         didOpen: () => Swal.showLoading()
     });
 
-    fetch('../backend/desbloquear_hora.php', {
+    fetch('../backend/bloquear_dia.php', { // Nuevo endpoint para bloqueo día completo
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fecha })
+            body: JSON.stringify({ fecha, motivo })
         })
         .then(res => res.json())
-        .then(() => {
-            const horas = [];
-            let inicio = new Date(`${fecha}T08:00:00`);
-            const fin = new Date(`${fecha}T20:00:00`);
-            while (inicio <= fin) {
-                horas.push(inicio.toTimeString().slice(0, 5));
-                inicio = new Date(inicio.getTime() + 30 * 60000);
-            }
-
-            const promesas = horas.map(hora => {
-                return fetch('../backend/bloquear_hora.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fecha, hora, motivo })
-                });
-            });
-
-            return Promise.all(promesas);
-        })
-        .then(() => {
+        .then(resp => {
             Swal.close();
-            Swal.fire('Bloqueado', 'El día completo ha sido bloqueado.', 'success');
-            cargarHoras();
+            if (resp.ok) {
+                Swal.fire('Bloqueado', resp.mensaje || 'El día completo ha sido bloqueado y citas canceladas.', 'success');
+                cargarHoras();
+            } else {
+                Swal.fire('Error', resp.mensaje || 'Error al bloquear el día completo.', 'error');
+            }
         })
         .catch(() => {
             Swal.close();
             Swal.fire('Error', 'Error al bloquear el día completo.', 'error');
         });
 }
+
 
 function bloquearHorasFuncion(fecha, motivo, horas) {
     Swal.fire({

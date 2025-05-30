@@ -1,0 +1,83 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+h2 {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+label {
+    font-weight: 600;
+    color: #34495e;
+}
+
+#horas-container {
+    display: none;
+    gap: 8px;
+    justify-content: start;
+}
+
+.hora {
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 3px 0;
+    min-width: 70px;
+    text-align: center;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    background-color: white;
+    color: #34495e;
+}
+
+.hora.bloqueada {
+    background-color: #e74c3c;
+    color: white;
+    border-color: #c0392b;
+}
+
+.hora.disponible:hover {
+    background-color: #bee3f8;
+    color: #1e3a8a;
+    border-color: #0d6efd;
+}
+
+
+/* Botón guardar */
+
+#btnGuardar {
+    width: 100%;
+    max-width: 220px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+
+/* Container centralizado y con max width */
+
+.container-custom {
+    max-width: 480px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Responsive ajustes */
+
+@media (min-width: 576px) {
+    #horas-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+}
