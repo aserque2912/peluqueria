@@ -1,9 +1,7 @@
-// Esperamos que la página cargue completamente
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     cargarHistorialCitas();
 });
 
-// Función para cargar el historial de citas
 function cargarHistorialCitas() {
     const tbody = document.getElementById('historial-citas');
     const mensajeError = document.getElementById('mensaje-error');
@@ -18,8 +16,8 @@ function cargarHistorialCitas() {
             credentials: 'same-origin'
         })
         .then(response => {
-            if (response.ok) return response.json();
-            throw new Error('No se pudo obtener el historial de citas');
+            if (!response.ok) throw new Error('No se pudo obtener el historial de citas');
+            return response.json();
         })
         .then(data => {
             if (data.error) {
@@ -31,44 +29,110 @@ function cargarHistorialCitas() {
 
             if (Array.isArray(data) && data.length > 0) {
                 tbody.innerHTML = '';
-                const ahora = new Date();
 
                 data.forEach(cita => {
-                    let fechaCita;
+                    let fechaHoraCita;
                     if (cita.fecha.includes('/')) {
                         const partes = cita.fecha.split('/');
-                        fechaCita = new Date(`${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}T${cita.hora}`);
-                    } else if (cita.fecha.includes('-')) {
-                        fechaCita = new Date(`${cita.fecha}T${cita.hora}`);
+                        fechaHoraCita = new Date(`${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}T${cita.hora}`);
                     } else {
-                        console.error('Formato de fecha inesperado:', cita.fecha);
-                        return;
+                        fechaHoraCita = new Date(`${cita.fecha}T${cita.hora}`);
                     }
+                    const ahora = new Date();
 
                     const fila = document.createElement('tr');
                     fila.innerHTML = `
-                        <td>${cita.id}</td>
-                        <td>${cita.nombre_cliente}</td>
-                        <td>${cita.telefono}</td>
-                        <td>${cita.fecha}</td>
-                        <td>${cita.hora}</td>
-                        <td>${cita.servicio}</td>
-                        <td>${cita.estado}</td>
-                        <td class="accion"></td>
-                    `;
+            <td>${cita.id}</td>
+            <td>${cita.nombre_cliente}</td>
+            <td>${cita.telefono}</td>
+            <td>${cita.fecha}</td>
+            <td>${cita.hora}</td>
+            <td>${cita.servicio}</td>
+            <td>${cita.estado}</td>
+            <td class="accion"></td>
+          `;
 
-                    if (fechaCita > ahora) {
+                    if (fechaHoraCita >= ahora) {
                         const tdAccion = fila.querySelector('.accion');
                         const btnEliminar = document.createElement('button');
-                        btnEliminar.classList.add('btn-eliminar');
+                        btnEliminar.classList.add('btn-eliminar', 'btn', 'btn-sm', 'btn-danger');
                         btnEliminar.title = 'Eliminar cita';
-                        btnEliminar.innerHTML = `<i class="fa-regular fa-trash-can"></i>`;
-                        btnEliminar.addEventListener('click', () => eliminarCita(cita.id));
+                        btnEliminar.setAttribute('data-id', cita.id);
+                        btnEliminar.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
                         tdAccion.appendChild(btnEliminar);
                     }
 
                     tbody.appendChild(fila);
                 });
+
+                // Añadir listener para eliminar
+                tbody.querySelectorAll('.btn-eliminar').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const citaId = btn.getAttribute('data-id');
+
+                        Swal.fire({
+                            title: '¿Seguro que quieres eliminar esta cita?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#aaa',
+                            confirmButtonText: 'Sí, eliminar',
+                            cancelButtonText: 'Cancelar',
+                            showClass: { popup: 'animate__animated animate__fadeInDown' },
+                            hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+                        }).then(result => {
+                            if (result.isConfirmed) {
+                                Swal.fire({
+                                    title: 'Eliminando...',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    showConfirmButton: false,
+                                    didOpen: () => Swal.showLoading()
+                                });
+
+                                fetch('../backend/eliminar_cita.php', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ id: citaId })
+                                    })
+                                    .then(res => res.json())
+                                    .then(resp => {
+                                        Swal.close();
+                                        if (resp.ok) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Cita eliminada',
+                                                showClass: { popup: 'animate__animated animate__fadeInDown' },
+                                                hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+                                            });
+                                            btn.closest('tr').remove();
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: resp.error || 'No se pudo eliminar la cita',
+                                                confirmButtonColor: '#d33',
+                                                showClass: { popup: 'animate__animated animate__fadeInDown' },
+                                                hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+                                            });
+                                        }
+                                    })
+                                    .catch(err => {
+                                        Swal.close();
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error de conexión',
+                                            text: err.message,
+                                            confirmButtonColor: '#d33',
+                                            showClass: { popup: 'animate__animated animate__fadeInDown' },
+                                            hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+                                        });
+                                    });
+                            }
+                        });
+                    });
+                });
+
             } else {
                 tbody.innerHTML = '';
                 mensajeError.style.display = 'block';
@@ -81,56 +145,9 @@ function cargarHistorialCitas() {
                 icon: 'error',
                 title: 'Error al cargar',
                 text: `Error al cargar las citas: ${error.message}`,
-                confirmButtonColor: '#d33'
+                confirmButtonColor: '#d33',
+                showClass: { popup: 'animate__animated animate__fadeInDown' },
+                hideClass: { popup: 'animate__animated animate__fadeOutUp' }
             });
         });
-}
-
-function eliminarCita(idCita) {
-    Swal.fire({
-        title: '¿Seguro que quieres eliminar esta cita?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#aaa',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('../backend/eliminar_cita.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ id: idCita })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Eliminado',
-                            text: 'Cita eliminada correctamente.',
-                            confirmButtonColor: '#3085d6'
-                        }).then(() => {
-                            cargarHistorialCitas();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.message || 'Error desconocido',
-                            confirmButtonColor: '#d33'
-                        });
-                    }
-                })
-                .catch(err => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error de conexión',
-                        text: err.message,
-                        confirmButtonColor: '#d33'
-                    });
-                });
-        }
-    });
 }
