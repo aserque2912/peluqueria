@@ -25,76 +25,69 @@ fetch('../backend/ver_usuarios.php')
             tbody.appendChild(tr);
         });
 
-        // Evento eliminar con SweetAlert2 animado
+        // Evento eliminar con SweetAlert2 animado y confirmación en cascada
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', () => {
                 const userId = btn.getAttribute('data-id');
 
-                Swal.fire({
-                    title: '¿Seguro que quieres eliminar este usuario?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#aaa',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInDown'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutUp'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: 'Eliminando...',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            showConfirmButton: false,
-                            didOpen: () => Swal.showLoading()
-                        });
+                eliminarUsuario(userId, false, btn);
+            });
+        });
 
-                        fetch('../backend/eliminar_usuario.php', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ id: userId })
-                            })
-                            .then(res => res.json())
-                            .then(resp => {
-                                Swal.close();
-                                if (resp.ok) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Usuario eliminado',
-                                        showClass: {
-                                            popup: 'animate__animated animate__fadeInDown'
-                                        },
-                                        hideClass: {
-                                            popup: 'animate__animated animate__fadeOutUp'
-                                        }
-                                    });
-                                    btn.closest('tr').remove();
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error',
-                                        text: resp.mensaje || 'Error desconocido',
-                                        confirmButtonColor: '#d33',
-                                        showClass: {
-                                            popup: 'animate__animated animate__fadeInDown'
-                                        },
-                                        hideClass: {
-                                            popup: 'animate__animated animate__fadeOutUp'
-                                        }
-                                    });
-                                }
-                            })
-                            .catch(err => {
-                                Swal.close();
+        function eliminarUsuario(userId, confirmar, btn) {
+            Swal.fire({
+                title: confirmar ?
+                    'Este usuario tiene citas asociadas. ¿Seguro que quieres eliminarlo junto con todas sus citas?' :
+                    '¿Seguro que quieres eliminar este usuario?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: confirmar ? 'Sí, eliminar todo' : 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Eliminando...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    fetch('../backend/eliminar_usuario.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: userId, confirmar: confirmar })
+                        })
+                        .then(res => res.json())
+                        .then(resp => {
+                            Swal.close();
+                            if (resp.ok) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Usuario eliminado',
+                                    showClass: {
+                                        popup: 'animate__animated animate__fadeInDown'
+                                    },
+                                    hideClass: {
+                                        popup: 'animate__animated animate__fadeOutUp'
+                                    }
+                                });
+                                if (btn) btn.closest('tr').remove();
+                            } else if (resp.tiene_citas && !confirmar) {
+                                eliminarUsuario(userId, true, btn);
+                            } else {
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Error de conexión',
-                                    text: err.message,
+                                    title: 'Error',
+                                    text: resp.mensaje || 'Error desconocido',
                                     confirmButtonColor: '#d33',
                                     showClass: {
                                         popup: 'animate__animated animate__fadeInDown'
@@ -103,11 +96,26 @@ fetch('../backend/ver_usuarios.php')
                                         popup: 'animate__animated animate__fadeOutUp'
                                     }
                                 });
+                            }
+                        })
+                        .catch(err => {
+                            Swal.close();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error de conexión',
+                                text: err.message,
+                                confirmButtonColor: '#d33',
+                                showClass: {
+                                    popup: 'animate__animated animate__fadeInDown'
+                                },
+                                hideClass: {
+                                    popup: 'animate__animated animate__fadeOutUp'
+                                }
                             });
-                    }
-                });
+                        });
+                }
             });
-        });
+        }
 
         // Evento editar para redirigir
         document.querySelectorAll('.btn-editar').forEach(btn => {
