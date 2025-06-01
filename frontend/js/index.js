@@ -2,9 +2,8 @@ fetch('../backend/check_session.php')
     .then(response => response.json())
     .then(data => {
         if (data.loggedIn) {
-            // Si el usuario está logueado
-            document.getElementById('authLinks').style.display = 'none'; // Ocultamos los links de autenticación
-            // Mostrar enlace admin solo si rol es administrador
+            document.getElementById('authLinks').style.display = 'none'; // Ocultamos links login/registro
+
             if (data.usuario.rol === 'administrador') {
                 const dropdownMenu = document.querySelector('#userLinks ul.dropdown-menu');
 
@@ -13,7 +12,6 @@ fetch('../backend/check_session.php')
                     const li = document.createElement('li');
                     li.innerHTML = `<a class="dropdown-item" href="../frontend/admin_citas.html" id="adminCitasLink">Ver todas las citas</a>`;
 
-                    // Insertar después de "Mis Citas" (primer <li>)
                     const misCitasLi = dropdownMenu.querySelector('li');
                     if (misCitasLi && misCitasLi.nextSibling) {
                         dropdownMenu.insertBefore(li, misCitasLi.nextSibling);
@@ -27,7 +25,6 @@ fetch('../backend/check_session.php')
                     const liUsuarios = document.createElement('li');
                     liUsuarios.innerHTML = `<a class="dropdown-item" href="../frontend/ver_usuarios.html" id="verUsuariosLink">Ver Usuarios</a>`;
 
-                    // Insertar justo después de "Ver todas las citas"
                     const adminCitasLi = document.getElementById('adminCitasLink');
                     if (adminCitasLi && adminCitasLi.parentElement) {
                         const nextSibling = adminCitasLi.parentElement.nextSibling;
@@ -40,44 +37,59 @@ fetch('../backend/check_session.php')
                         dropdownMenu.appendChild(liUsuarios);
                     }
                 }
+
+                // Enlace "Bloquear Horas" (nuevo)
+                if (dropdownMenu && !document.getElementById('bloquearHorasLink')) {
+                    const liBloquearHoras = document.createElement('li');
+                    liBloquearHoras.innerHTML = `<a class="dropdown-item" href="../frontend/bloquear_horas.html" id="bloquearHorasLink">Bloquear Horas</a>`;
+
+                    const verUsuariosLi = document.getElementById('verUsuariosLink');
+                    if (verUsuariosLi && verUsuariosLi.parentElement) {
+                        const nextSibling = verUsuariosLi.parentElement.nextSibling;
+                        if (nextSibling) {
+                            verUsuariosLi.parentElement.parentElement.insertBefore(liBloquearHoras, nextSibling);
+                        } else {
+                            verUsuariosLi.parentElement.parentElement.appendChild(liBloquearHoras);
+                        }
+                    } else {
+                        dropdownMenu.appendChild(liBloquearHoras);
+                    }
+                }
             }
 
-            // Forzamos la visibilidad de #userLinks
+            // Mostrar links usuario
             const userLinks = document.getElementById('userLinks');
-            if (userLinks) {
-                userLinks.style.display = 'flex'; // Aseguramos que el contenedor de usuario se muestre
-            }
+            if (userLinks) userLinks.style.display = 'flex';
 
-            // Asignamos el nombre al contenedor userName después de un pequeño retraso
+            // Asignar nombre usuario
             const userName = document.getElementById('userName');
             if (userName) {
                 setTimeout(() => {
-                    userName.textContent = data.usuario.nombre; // Asignamos el nombre
-                    console.log("Nombre del usuario:", data.usuario.nombre); // Imprimimos el nombre en la consola
-                }, 50); // Retraso de 50ms para asegurar que el DOM esté listo
+                    userName.textContent = data.usuario.nombre;
+                }, 50);
             }
 
-            // Configurar el enlace de cierre de sesión
+            // Configurar logout
             const logoutLink = document.getElementById('logoutLink');
             if (logoutLink) {
-                logoutLink.addEventListener('click', function(e) {
+                logoutLink.addEventListener('click', e => {
                     e.preventDefault();
-                    window.location.href = '../backend/logout.php'; // Redirige a logout.php
+                    window.location.href = '../backend/logout.php';
                 });
             }
         } else {
-            // Si el usuario NO está logueado, mostramos los enlaces de login y registro
-            document.getElementById('authLinks').style.display = 'flex'; // Mostramos los links de autenticación
-            document.getElementById('userLinks').style.display = 'none'; // Ocultamos los links del usuario
+            // Mostrar links login y registro si no está logueado
+            document.getElementById('authLinks').style.display = 'flex';
+            document.getElementById('userLinks').style.display = 'none';
         }
     })
     .catch(error => {
-        console.error('Error al verificar la sesión:', error); // Mostramos el error en la consola
-        // En caso de error, mostramos los enlaces de autenticación por defecto
+        console.error('Error al verificar la sesión:', error);
         document.getElementById('authLinks').style.display = 'flex';
         document.getElementById('userLinks').style.display = 'none';
     });
 
+// Resto del código carousel ...
 const carousel = document.querySelector(".carousel");
 const slides = document.querySelectorAll(".carousel-slide");
 const nextBtn = document.querySelector(".carousel-btn.next");
@@ -101,13 +113,11 @@ prevBtn.addEventListener("click", () => {
     showSlide(index);
 });
 
-// Autoplay
 let autoPlay = setInterval(() => {
     index++;
     showSlide(index);
 }, 4000);
 
-// Pausar autoplay al pasar el ratón
 carousel.addEventListener("mouseover", () => clearInterval(autoPlay));
 carousel.addEventListener("mouseleave", () => {
     autoPlay = setInterval(() => {

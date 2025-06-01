@@ -1,8 +1,22 @@
+/* Evitar solapamiento con navbar fixed-top */
+
 body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;
-    min-height: 100vh;
+    background-image: url('../img/pexels-rdne-7697715.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    font-family: 'Arial', sans-serif;
+    padding: 120px 20px 20px 20px;
+}
+
+
+/* Ajuste responsive: más padding-top para navbar más alta en móviles */
+
+@media (max-width: 576px) {
+    body {
+        padding-top: 140px;
+        /* Más espacio en móvil */
+    }
 }
 
 h2 {
@@ -15,53 +29,9 @@ h2 {
 label {
     font-weight: 600;
     color: #34495e;
+    display: block;
+    margin-bottom: 0.5rem;
 }
-
-#horas-container {
-    display: none;
-    gap: 8px;
-    justify-content: start;
-}
-
-.hora {
-    cursor: pointer;
-    user-select: none;
-    padding: 10px 14px;
-    border-radius: 6px;
-    margin: 3px 0;
-    min-width: 70px;
-    text-align: center;
-    border: 1px solid #ccc;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    background-color: white;
-    color: #34495e;
-}
-
-.hora.bloqueada {
-    background-color: #e74c3c;
-    color: white;
-    border-color: #c0392b;
-}
-
-.hora.disponible:hover {
-    background-color: #bee3f8;
-    color: #1e3a8a;
-    border-color: #0d6efd;
-}
-
-
-/* Botón guardar */
-
-#btnGuardar {
-    width: 100%;
-    max-width: 220px;
-    font-weight: 600;
-    border-radius: 6px;
-    padding: 10px;
-}
-
-
-/* Container centralizado y con max width */
 
 .container-custom {
     max-width: 480px;
@@ -70,14 +40,88 @@ label {
     padding: 30px 25px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    /* Si prefieres, puedes usar margin-top aquí en vez de padding en body */
+    /* margin-top: 40px; */
+}
+
+#horas-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+    margin-bottom: 0.5rem;
+    /* reducido de 1.5rem */
+    min-height: 3.5rem;
+}
+
+.hora {
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    min-width: 70px;
+    text-align: center;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #34495e;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.hora.disponible:hover {
+    background-color: #bee3f8;
+    color: #1e3a8a;
+    border-color: #0d6efd;
+}
+
+.hora.bloqueada {
+    background-color: #e74c3c;
+    color: white;
+    border-color: #c0392b;
+}
+
+.hora.bloqueada:hover {
+    background-color: #bb2d3b;
+    border-color: #9a2229;
+}
+
+#motivo {
+    resize: vertical;
+}
+
+#btnGuardar {
+    width: 100%;
+    max-width: 220px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 10px;
+    display: block;
+    margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+    .container-custom {
+        padding: 40px 35px;
+    }
 }
 
 
-/* Responsive ajustes */
+/* Forzar margen inferior más pequeño en input fecha */
 
-@media (min-width: 576px) {
-    #horas-container {
-        display: flex;
-        flex-wrap: wrap;
-    }
+#fecha {
+    margin-bottom: 0.5rem !important;
+}
+
+
+/* Forzar margen superior 0 en input motivo */
+
+#motivo {
+    margin-top: 0 !important;
+}
+
+
+/* Ajusta los márgenes inferiores para que sean iguales y más compactos */
+
+.container-custom>.mb-4 {
+    margin-bottom: 1rem !important;
 }
