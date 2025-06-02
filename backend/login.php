@@ -1,42 +1,36 @@
 <?php
 session_start();
+header('Content-Type: application/json'); // 👈 Esto es crucial para devolver JSON
+
 include_once("config.php");
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $password = trim($_POST['password']);
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
 
-    // Validar que el email y la contraseña no estén vacíos
-    if (empty($email) || empty($password)) {
-        echo "Por favor, completa todos los campos.";
-        exit;
-    }
-
-    // Validar usuario
-    $conexion = obtenerConexion();
-    $sql = "SELECT * FROM usuarios WHERE email = ?";
-    $stmt = $conexion->prepare($sql);
-
-    if ($stmt === false) {
-        die("Error en la preparación de la consulta: " . $conexion->error);
-    }
-
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $usuario = $result->fetch_assoc();
-        if (password_verify($password, $usuario['password'])) {
-            // Almacenar información del usuario en la sesión
-            $_SESSION['usuario'] = $usuario; // Almacena toda la información del usuario
-            header("Location: ../frontend/index.html");
-            exit;
-        } else {
-            echo "Contraseña incorrecta.";
-        }
-    } else {
-        echo "Usuario no encontrado.";
-    }
+if (!$email || !$password) {
+    echo json_encode(['success' => false, 'message' => 'Todos los campos son obligatorios']);
+    exit;
 }
-?> 
+
+$conexion = obtenerConexion();
+$sql = "SELECT * FROM usuarios WHERE email = ?";
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$resultado = $stmt->get_result();
+
+if ($usuario = $resultado->fetch_assoc()) {
+    if (password_verify($password, $usuario['password'])) {
+        $_SESSION['usuario'] = [
+            'id' => $usuario['id'],
+            'nombre' => $usuario['nombre'],
+            'email' => $usuario['email'],
+            'rol' => $usuario['rol']
+        ];
+        echo json_encode(['success' => true, 'message' => 'Inicio de sesión exitoso']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Contraseña incorrecta']);
+    }
+} else {
+    echo json_encode(['success' => false, 'message' => 'Usuario no encontrado']);
+}

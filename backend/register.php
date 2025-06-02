@@ -1,22 +1,22 @@
 <?php
 session_start();
+header('Content-Type: application/json'); // 🔴 IMPORTANTE para fetch+Swal
 include_once("config.php");
 
-// Verificar si se ha enviado el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $telefono = trim($_POST['telefono']);
-    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+    $password = trim($_POST['password']);
 
-    // Validar que los campos no estén vacíos
     if (empty($nombre) || empty($email) || empty($telefono) || empty($password)) {
-        echo "Por favor, completa todos los campos.";
+        echo json_encode(['success' => false, 'message' => 'Por favor, completa todos los campos.']);
         exit;
     }
 
-    // Comprobar si el email ya está registrado
     $conexion = obtenerConexion();
+
+    // Verificar si ya existe ese correo
     $sql = "SELECT * FROM usuarios WHERE email = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $email);
@@ -24,19 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        echo "El correo electrónico ya está registrado.";
+        echo json_encode(['success' => false, 'message' => 'El correo electrónico ya está registrado.']);
+        exit;
+    }
+
+    // Insertar nuevo usuario
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $sql = "INSERT INTO usuarios (nombre, email, telefono, password, rol) VALUES (?, ?, ?, ?, 'cliente')";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("ssss", $nombre, $email, $telefono, $hash);
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'Usuario registrado correctamente']);
     } else {
-        // Insertar nuevo usuario
-        $sql = "INSERT INTO usuarios (nombre, email, telefono, password, rol) VALUES (?, ?, ?, ?, 'cliente')";
-        $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssss", $nombre, $email, $telefono, $password);
-        if ($stmt->execute()) {
-            // Redirigir a la página de inicio de sesión
-            header("Location: ../frontend/login.html");
-            exit; // Asegúrate de salir después de la redirección
-        } else {
-            echo "Error al registrar el usuario: " . $stmt->error;
-        }
+        echo json_encode(['success' => false, 'message' => 'Error al registrar el usuario']);
     }
 }
 ?>
