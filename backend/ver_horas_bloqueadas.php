@@ -3,7 +3,7 @@ include_once("config.php");
 
 $conexion = obtenerConexion();
 
-$sql = "SELECT fecha, hora, motivo FROM horas_bloqueadas ORDER BY fecha DESC, hora ASC";
+$sql = "SELECT id, fecha, hora, motivo FROM horas_bloqueadas ORDER BY fecha DESC, hora ASC";
 $resultado = $conexion->query($sql);
 
 $bloqueos = [];
