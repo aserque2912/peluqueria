@@ -35,7 +35,7 @@ if ($rolUsuario === 'administrador') {
     }
     $stmt->bind_param('i', $idCita);
 } else {
-    $sql = "DELETE FROM citas WHERE id = ? AND usuario_id = ?";
+    $sql = "DELETE FROM citas WHERE id = ? AND user_id = ?";
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         echo json_encode(['error' => 'Error preparando la consulta: ' . $conn->error]);

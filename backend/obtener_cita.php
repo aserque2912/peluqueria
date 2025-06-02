@@ -2,18 +2,6 @@
 session_start();
 include_once ('config.php');
 
-if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrador') {
-    http_response_code(403);
-    echo json_encode(['error' => 'No autorizado']);
-    exit;
-}
-
-if (!isset($_GET['id'])) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Falta id']);
-    exit;
-}
-
 $id = intval($_GET['id']);
 $conexion = obtenerConexion();
 

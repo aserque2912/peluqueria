@@ -4,7 +4,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async(e) => {
         e.preventDefault();
+
+        const password = form.querySelector('input[name="password"]').value;
+        const confirmPassword = form.querySelector('input[name="confirm_password"]').value;
+
+
+        if (password !== confirmPassword) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Las contraseñas no coinciden'
+            });
+            return;
+        }
+
+        // Crear un FormData nuevo sin el campo confirm_password
         const formData = new FormData(form);
+        formData.delete('confirm_password'); // Eliminamos el confirm_password para no enviarlo
 
         const telefono = formData.get("telefono");
         if (!/^[0-9]{9}$/.test(telefono)) {
