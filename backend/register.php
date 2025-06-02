@@ -1,6 +1,6 @@
 <?php
 session_start();
-header('Content-Type: application/json'); // 🔴 IMPORTANTE para fetch+Swal
+header('Content-Type: application/json');
 include_once("config.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -10,13 +10,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
 
     if (empty($nombre) || empty($email) || empty($telefono) || empty($password)) {
-        echo json_encode(['success' => false, 'message' => 'Por favor, completa todos los campos.']);
+        echo json_encode(['success' => false, 'message' => 'Todos los campos son obligatorios']);
+        exit;
+    }
+
+    // Validación del número de teléfono: exactamente 9 dígitos numéricos
+    if (!preg_match('/^[0-9]{9}$/', $telefono)) {
+        echo json_encode(['success' => false, 'message' => 'El número debe tener exactamente 9 dígitos.']);
         exit;
     }
 
     $conexion = obtenerConexion();
 
-    // Verificar si ya existe ese correo
     $sql = "SELECT * FROM usuarios WHERE email = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $email);
@@ -28,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Insertar nuevo usuario
     $hash = password_hash($password, PASSWORD_DEFAULT);
     $sql = "INSERT INTO usuarios (nombre, email, telefono, password, rol) VALUES (?, ?, ?, ?, 'cliente')";
     $stmt = $conexion->prepare($sql);
@@ -39,5 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo json_encode(['success' => false, 'message' => 'Error al registrar el usuario']);
     }
+
+    $stmt->close();
+    $conexion->close();
 }
 ?>

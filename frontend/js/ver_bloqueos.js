@@ -34,15 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 filtrados.forEach(b => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-            <td>${b.fecha}</td>
-            <td>${b.hora}</td>
-            <td>${b.motivo || '-'}</td>
-            <td>
-              <button class="btn btn-outline-danger btn-sm eliminar-btn" title="Eliminar">
-                <i class="fa fa-trash"></i>
-              </button>
-            </td>
-          `;
+                        <td>${b.fecha}</td>
+                        <td>${b.hora}</td>
+                        <td>${b.motivo || '-'}</td>
+                        <td>
+                            <button class="btn btn-eliminar eliminar-btn" title="Eliminar">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
 
                     row.querySelector('.eliminar-btn').addEventListener('click', () => {
                         Swal.fire({
@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
                     }
                 });
-
             })
             .catch(err => {
                 console.error(err);
@@ -99,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarBloqueos();
 
-    // Botón para borrar todos los bloqueos de una fecha
     const btnBorrarTodos = document.getElementById('btnBorrarBloqueos');
     if (btnBorrarTodos) {
         btnBorrarTodos.addEventListener('click', () => {

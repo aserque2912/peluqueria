@@ -6,6 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const formData = new FormData(form);
 
+        const telefono = formData.get("telefono");
+        if (!/^[0-9]{9}$/.test(telefono)) {
+            Swal.fire({
+                icon: "warning",
+                title: "Teléfono inválido",
+                text: "El número debe contener exactamente 9 dígitos numéricos"
+            });
+            return;
+        }
+
         const response = await fetch('../backend/register.php', {
             method: 'POST',
             body: formData

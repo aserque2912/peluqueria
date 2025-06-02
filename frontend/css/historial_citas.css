@@ -85,10 +85,11 @@ label,
 .btn-eliminar {
     background: transparent;
     border: none;
-    cursor: pointer;
+    padding: 4px;
     color: #c0392b;
+    font-size: 1.1rem;
+    cursor: pointer;
     transition: color 0.3s ease;
-    padding: 0;
 }
 
 .btn-eliminar:hover {
