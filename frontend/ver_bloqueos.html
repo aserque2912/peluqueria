@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="./css/historial_citas.css" />
     <link rel="stylesheet" href="./css/navbar.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
 </head>
 
 <body>
@@ -74,26 +75,70 @@
     </header>
 
     <main class="container pt-5 mt-5">
-        <h2 class="text-center mb-4">Horarios Bloqueados</h2>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered align-middle text-center" id="bloqueosTable">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                        <th>Motivo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Se rellenará dinámicamente con JS -->
-                </tbody>
-            </table>
+        <div class="table-wrapper mx-auto">
+            <h2 class="text-center mb-4">Horarios Bloqueados</h2>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="filtroFecha" class="form-label">Filtrar por fecha:</label>
+                    <input type="date" id="filtroFecha" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="filtroHora" class="form-label">Filtrar por hora:</label>
+                    <select id="filtroHora" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="08:00:00">08:00</option>
+                        <option value="08:30:00">08:30</option>
+                        <option value="09:00:00">09:00</option>
+                        <option value="09:30:00">09:30</option>
+                        <option value="10:00:00">10:00</option>
+                        <option value="10:30:00">10:30</option>
+                        <option value="11:00:00">11:00</option>
+                        <option value="11:30:00">11:30</option>
+                        <option value="12:00:00">12:00</option>
+                        <option value="12:30:00">12:30</option>
+                        <option value="13:00:00">13:00</option>
+                        <option value="13:30:00">13:30</option>
+                        <option value="14:00:00">14:00</option>
+                        <option value="14:30:00">14:30</option>
+                        <option value="15:00:00">15:00</option>
+                        <option value="15:30:00">15:30</option>
+                        <option value="16:00:00">16:00</option>
+                        <option value="16:30:00">16:30</option>
+                        <option value="17:00:00">17:00</option>
+                        <option value="17:30:00">17:30</option>
+                        <option value="18:00:00">18:00</option>
+                        <option value="18:30:00">18:30</option>
+                        <option value="19:00:00">19:00</option>
+                        <option value="19:30:00">19:30</option>
+                        <option value="20:00:00">20:00</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle text-center rounded" id="bloqueosTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>FECHA</th>
+                            <th>HORA</th>
+                            <th>MOTIVO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Se rellenará dinámicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="./js/ver_bloqueos.js"></script>
     <script src="./js/index.js"></script>
 </body>

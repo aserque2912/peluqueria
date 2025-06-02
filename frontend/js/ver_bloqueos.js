@@ -59,6 +59,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 tbody.appendChild(row);
             });
+            const table = $('#bloqueosTable').DataTable();
+
+            // Filtro personalizado
+            $.fn.dataTable.ext.search.push(function(settings, data) {
+                const fechaSeleccionada = document.getElementById('filtroFecha').value;
+                const horaSeleccionada = document.getElementById('filtroHora').value;
+
+                const fecha = data[0]; // primera columna
+                const hora = data[1]; // segunda columna
+
+                const cumpleFecha = !fechaSeleccionada || fecha === fechaSeleccionada;
+                const cumpleHora = !horaSeleccionada || hora === horaSeleccionada;
+
+                return cumpleFecha && cumpleHora;
+            });
+
+            // Listeners para aplicar filtros
+            document.getElementById('filtroFecha').addEventListener('change', () => table.draw());
+            document.getElementById('filtroHora').addEventListener('change', () => table.draw());
+
         })
         .catch(err => {
             console.error(err);
