@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Horarios Bloqueados</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/navbar.css">
+    <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+</head>
+
+<body class="pt-5">
+    <!-- NAVBAR -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top" style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.75);">
+            <div class="container">
+                <!-- IZQUIERDA: LOGO + NOMBRE -->
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="img/900.jpg" alt="Logo" height="55" class="me-2 rounded-circle shadow">
+                    <span class="fw-semibold">Serranos's Barber</span>
+                </a>
+
+                <!-- CENTRO: PEDIR CITA CENTRADO -->
+                <div class="position-absolute start-50 translate-middle-x">
+                    <a class="btn btn-outline-secondary fw-bold px-4 py-2 rounded-pill" href="gestion_citas.html">
+                        <i class="fa-solid fa-scissors me-2"></i> Pedir Cita
+                    </a>
+                </div>
+
+                <!-- BOTÓN RESPONSIVE -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- MENÚ -->
+                <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+                    <ul class="navbar-nav align-items-center">
+                        <!-- Aparece si no hay una sesión iniciada -->
+                        <div id="authLinks">
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar
+                                    sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i>
+                                    Registrarse</a>
+                            </li>
+                        </div>
+
+                        <!-- Aparece si hay una sesión iniciada -->
+                        <div id="userLinks" style="display: none;">
+                            <span class="navbar-text text-white" style="font-size: 0.9rem; padding: 8px 15px;">
+                                Hola, <span id="userName"></span>
+                            </span>
+
+                            <!-- Dropdown para Historial de Citas y cerrar sesión -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Mi Cuenta
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis
+                                            Citas</a></li>
+                                    <li><a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar
+                                            sesión</a></li>
+                                </ul>
+                            </li>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Horarios Bloqueados</h2>
+        <div id="mensaje-error" class="alert alert-danger d-none"></div>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Motivo</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-bloqueos">
+                    <tr>
+                        <td colspan="3" class="text-center">Cargando datos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/ver_bloqueos.js"></script>
+    <script src="./js/index.js"></script>
+
+</body>
+
+</html>

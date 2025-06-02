@@ -55,6 +55,15 @@ fetch('../backend/check_session.php')
                         dropdownMenu.appendChild(liBloquearHoras);
                     }
                 }
+
+                // Enlace "Horarios Bloqueados"
+                if (dropdownMenu && !document.getElementById('verBloqueosLink')) {
+                    const liBloqueos = document.createElement('li');
+                    liBloqueos.innerHTML = `<a class="dropdown-item" href="ver_bloqueos.html" id="verBloqueosLink">Horarios Bloqueados</a>`;
+
+                    dropdownMenu.appendChild(liBloqueos); // Puedes ajustar la posición si quieres que aparezca en cierto orden
+                }
+
             }
 
             // Mostrar links usuario
