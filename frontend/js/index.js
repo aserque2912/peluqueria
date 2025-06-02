@@ -38,7 +38,7 @@ fetch('../backend/check_session.php')
                     }
                 }
 
-                // Enlace "Bloquear Horas" (nuevo)
+                // Enlace "Bloquear Horas"
                 if (dropdownMenu && !document.getElementById('bloquearHorasLink')) {
                     const liBloquearHoras = document.createElement('li');
                     liBloquearHoras.innerHTML = `<a class="dropdown-item" href="../frontend/bloquear_horas.html" id="bloquearHorasLink">Bloquear Horas</a>`;
@@ -61,9 +61,13 @@ fetch('../backend/check_session.php')
                     const liBloqueos = document.createElement('li');
                     liBloqueos.innerHTML = `<a class="dropdown-item" href="ver_bloqueos.html" id="verBloqueosLink">Horarios Bloqueados</a>`;
 
-                    dropdownMenu.appendChild(liBloqueos); // Puedes ajustar la posición si quieres que aparezca en cierto orden
+                    const logoutLink = document.getElementById('logoutLink');
+                    if (logoutLink && logoutLink.parentElement) {
+                        dropdownMenu.insertBefore(liBloqueos, logoutLink.parentElement);
+                    } else {
+                        dropdownMenu.appendChild(liBloqueos);
+                    }
                 }
-
             }
 
             // Mostrar links usuario
