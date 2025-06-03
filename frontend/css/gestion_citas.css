@@ -5,6 +5,7 @@ body {
     background-size: cover;
     background-position: center top;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
@@ -72,4 +73,70 @@ h2 {
         margin-top: 100px;
         padding: 25px;
     }
+}
+
+
+/* -------------------------------------
+   Estilos generales para el formulario
+   ------------------------------------- */
+
+
+/* -------------------------------------
+   BLOQUE: Horas disponibles estilo “bloquear horarios”
+   ------------------------------------- */
+
+
+/* Cada “hora” se muestra como un bloque rectangular con borde redondeado */
+
+.hora-disponible {
+    display: inline-block;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem;
+    border: 1px solid #cfd4d9;
+    /* gris claro */
+    border-radius: 0.375rem;
+    /* esquinas redondeadas */
+    background-color: #ffffff;
+    /* fondo blanco */
+    color: #324a5e;
+    /* texto oscuro/grisáceo */
+    font-weight: 600;
+    /* ligeramente negrita */
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    text-align: center;
+    min-width: 80px;
+    /* opcional, para forzar ancho uniforme */
+}
+
+
+/* Hover: fondo muy tenue */
+
+.hora-disponible:hover {
+    background-color: #f0f4f8;
+}
+
+
+/* Estado seleccionado: fondo azul clarito + borde/ texto azules */
+
+.hora-disponible.seleccionada {
+    background-color: #e3f2ff;
+    /* azul muy claro */
+    border-color: #1e90ff;
+    /* azul más intenso */
+    color: #1e90ff;
+    /* texto en azul */
+}
+
+
+/* -------------------------------------
+   Otros estilos puntuales (opcional)
+   ------------------------------------- */
+
+#citaForm {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }

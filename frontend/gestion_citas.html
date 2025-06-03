@@ -1,16 +1,18 @@
-<!-- gestion_citas.html -->
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestionar Citas - Serranos's Barber</title>
+    <title>Pedir Cita - Serranos's Barber</title>
 
-    <!-- Estilos -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <!-- Navbar común -->
     <link rel="stylesheet" href="./css/navbar.css" />
+    <!-- Estilos propios de Gestión de Citas -->
     <link rel="stylesheet" href="./css/gestion_citas.css" />
+    <!-- Asegúrate de que las reglas de bloquear_horarios estén incluidas en gestion_citas.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -36,8 +38,8 @@
 
                 <!-- BOTÓN RESPONSIVE -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
                 <!-- MENÚ -->
                 <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
@@ -45,31 +47,30 @@
                         <!-- Aparece si no hay una sesión iniciada -->
                         <div id="authLinks">
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar
-                                    sesión</a>
+                                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar sesión</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i>
-                                    Registrarse</a>
+                                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i> Registrarse</a>
                             </li>
                         </div>
 
                         <!-- Aparece si hay una sesión iniciada -->
                         <div id="userLinks" style="display: none;">
                             <span class="navbar-text text-white" style="font-size: 0.9rem; padding: 8px 15px;">
-                                Hola, <span id="userName"></span>
+                Hola, <span id="userName"></span>
                             </span>
-
                             <!-- Dropdown para Historial de Citas y cerrar sesión -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Mi Cuenta
-                                </a>
+                  Mi Cuenta
+                </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis
-                                            Citas</a></li>
-                                    <li><a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar
-                                            sesión</a></li>
+                                    <li>
+                                        <a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis Citas</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar sesión</a>
+                                    </li>
                                 </ul>
                             </li>
                         </div>
@@ -81,36 +82,38 @@
 
     <!-- FORMULARIO -->
     <main class="main-container" style="margin-top: 100px;">
-        <h2 class="mb-4">Gestionar Citas</h2>
-        <form id="citaForm">
-            <!-- 1. Servicio primero -->
-            <div class="mb-3">
-                <label for="servicio" class="form-label">Servicio</label>
-                <select class="form-control" id="servicio" name="servicio" required>
-                    <option value="corte">Corte</option>
-                    <option value="Tinte">Tinte</option>
-                    <option value="barba">Barba</option>
-                </select>
-            </div>
-
-            <!-- 2. Luego Fecha -->
-            <div class="mb-3">
-                <label for="fecha" class="form-label">Fecha</label>
-                <input type="date" class="form-control" id="fecha" name="fecha" required />
-            </div>
-
-            <!-- 3. Horas disponibles -->
-            <div class="mb-3">
-                <label class="form-label">Hora</label>
-                <div id="horas-disponibles" class="d-flex flex-wrap">
-                    <!-- Placeholder inicial -->
-                    <span class="text-muted">Selecciona un día para mostrar las horas disponibles</span>
+        <div class="container py-4">
+            <h2 class="mb-4 text-center">Pedir Cita</h2>
+            <form id="citaForm" class="mx-auto" style="max-width: 400px;">
+                <!-- 1. Servicio primero -->
+                <div class="mb-3">
+                    <label for="servicio" class="form-label">Servicio</label>
+                    <select class="form-control" id="servicio" name="servicio" required>
+            <option value="corte">Corte</option>
+            <option value="Tinte">Tinte</option>
+            <option value="barba">Barba</option>
+          </select>
                 </div>
-                <input type="hidden" id="hora-seleccionada" name="hora" />
-            </div>
 
-            <button type="submit" class="btn btn-success">Pedir Cita</button>
-        </form>
+                <!-- 2. Luego Fecha -->
+                <div class="mb-3">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha" required />
+                </div>
+
+                <!-- 3. Horas disponibles (con bloques estilo "bloquear horarios") -->
+                <div class="mb-3">
+                    <label class="form-label">Hora</label>
+                    <div id="horas-disponibles" class="d-flex flex-wrap gap-0">
+                        <!-- Texto inicial si no hay día seleccionado -->
+                        <span class="text-muted">Selecciona un día para mostrar las horas disponibles</span>
+                    </div>
+                    <input type="hidden" id="hora-seleccionada" name="hora" />
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Pedir Cita</button>
+            </form>
+        </div>
     </main>
 
     <!-- JS -->
