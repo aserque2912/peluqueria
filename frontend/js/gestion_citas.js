@@ -1,3 +1,5 @@
+// gestion_citas.js
+
 // Verificar si el usuario está autenticado al cargar la página
 fetch('../backend/check_session.php')
     .then(response => response.json())
@@ -22,70 +24,89 @@ fetch('../backend/check_session.php')
 // Limita la fecha mínima al día de hoy en el selector
 document.addEventListener('DOMContentLoaded', function() {
     const inputFecha = document.getElementById('fecha');
+    const contenedorHoras = document.getElementById('horas-disponibles');
+
     if (inputFecha) {
         inputFecha.min = new Date().toISOString().split('T')[0];
     }
+
+    // Estado inicial: placeholder ya está en el HTML
+    // Cuando cambie la fecha o el servicio, recargamos horas como botones
+    inputFecha.addEventListener('change', cargarHorasComoBotones);
+    document.getElementById('servicio').addEventListener('change', () => {
+        // Si no hay fecha, mostramos placeholder
+        if (!inputFecha.value) {
+            contenedorHoras.innerHTML = '<span class="text-muted">Selecciona un día para mostrar las horas disponibles</span>';
+            document.getElementById('hora-seleccionada').value = '';
+            return;
+        }
+        cargarHorasComoBotones();
+    });
 });
 
-document.getElementById('fecha').addEventListener('change', function() {
-    const fecha = this.value;
+function cargarHorasComoBotones() {
+    const fecha = document.getElementById('fecha').value;
     const servicio = document.getElementById('servicio').value;
+    const contenedor = document.getElementById('horas-disponibles');
+    const inputHidden = document.getElementById('hora-seleccionada');
 
-    if (fecha) {
-        fetch(`../backend/obtener_horas_disponibles.php?fecha=${fecha}`)
-            .then(response => response.json())
-            .then(data => {
-                const horaSelect = document.getElementById('hora');
-                horaSelect.innerHTML = '<option value="">Seleccione una hora</option>';
+    contenedor.innerHTML = '';
+    inputHidden.value = '';
 
-                const horasDisponibles = data.horas_disponibles;
-
-                if (servicio === 'Tinte') {
-                    const bloqueadas = new Set();
-
-                    horasDisponibles.forEach(hora => {
-                        const base = new Date(`1970-01-01T${hora}`);
-                        for (let i = -4; i <= 0; i++) {
-                            const h = new Date(base.getTime() + i * 30 * 60 * 1000);
-                            const bloque = h.toTimeString().slice(0, 5);
-                            if (!horasDisponibles.includes(bloque)) {
-                                bloqueadas.add(hora);
-                            }
-                        }
-                    });
-
-                    horasDisponibles.forEach(hora => {
-                        if (bloqueadas.has(hora)) return;
-                        const option = document.createElement('option');
-                        option.value = hora;
-                        option.textContent = hora;
-                        horaSelect.appendChild(option);
-                    });
-                } else {
-                    horasDisponibles.forEach(hora => {
-                        const option = document.createElement('option');
-                        option.value = hora;
-                        option.textContent = hora;
-                        horaSelect.appendChild(option);
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Error al obtener horas disponibles.',
-                    confirmButtonColor: '#d33'
-                });
-            });
+    if (!fecha) {
+        contenedor.innerHTML = '<span class="text-muted">Selecciona un día para mostrar las horas disponibles</span>';
+        return;
     }
-});
+
+    fetch(`../backend/obtener_horas_disponibles.php?fecha=${encodeURIComponent(fecha)}`)
+        .then(response => response.json())
+        .then(data => {
+            const horasDisponibles = data.horas_disponibles || [];
+            let horasFiltradas = horasDisponibles.slice();
+
+
+            if (horasFiltradas.length === 0) {
+                contenedor.innerHTML = '<span class="text-muted">No hay horas disponibles</span>';
+                return;
+            }
+
+            horasFiltradas.forEach(hora => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.classList.add('btn', 'btn-outline-primary', 'm-1');
+                btn.textContent = hora;
+                btn.dataset.hora = hora;
+
+                btn.addEventListener('click', () => {
+                    // Guardar la hora en el input oculto
+                    inputHidden.value = hora;
+
+                    // Marcar este botón y desmarcar los demás
+                    contenedor.querySelectorAll('button').forEach(b => {
+                        b.classList.remove('btn-primary');
+                        b.classList.add('btn-outline-primary');
+                    });
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-primary');
+                });
+
+                contenedor.appendChild(btn);
+            });
+
+            // Auto-seleccionar la primera hora disponible
+            contenedor.querySelector('button').click();
+        })
+        .catch(error => {
+            console.error(error);
+            contenedor.innerHTML = '<span class="text-muted">Error al obtener horas disponibles.</span>';
+        });
+}
 
 document.getElementById('citaForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const fecha = document.getElementById('fecha').value;
-    const hora = document.getElementById('hora').value;
+    const hora = document.getElementById('hora-seleccionada').value;
     const servicio = document.getElementById('servicio').value;
 
     // ----------- VALIDACIÓN DE FECHA/HORA PASADA -----------
@@ -99,7 +120,7 @@ document.getElementById('citaForm').addEventListener('submit', function(e) {
             text: 'No puedes reservar en una hora pasada.',
             confirmButtonColor: '#d33'
         });
-        return; // Bloquea el envío
+        return;
     }
     // -------------------------------------------------------
 
@@ -121,7 +142,9 @@ document.getElementById('citaForm').addEventListener('submit', function(e) {
         const h1 = horaPlus1.toTimeString().slice(0, 5);
         const h2 = horaPlus2.toTimeString().slice(0, 5);
 
-        const url = `../backend/verificar_horas.php?fecha=${encodeURIComponent(fecha)}&hora1=${encodeURIComponent(h1)}&hora2=${encodeURIComponent(h2)}&nocache=${Date.now()}`;
+        const url = `../backend/verificar_horas.php?fecha=${encodeURIComponent(fecha)}&hora1=${encodeURIComponent(
+      h1
+    )}&hora2=${encodeURIComponent(h2)}&nocache=${Date.now()}`;
 
         fetch(url)
             .then(response => response.json())
@@ -130,10 +153,10 @@ document.getElementById('citaForm').addEventListener('submit', function(e) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Tinte no disponible',
-                        html: data.error || 'No puedes reservar un Tinte porque las 2 horas siguientes a la cita no están disponibles.',
+                        html: data.error ||
+                            'No puedes reservar un Tinte porque las 2 horas siguientes a la cita no están disponibles.',
                         confirmButtonColor: '#d33'
                     });
-
                     return;
                 }
                 enviarReserva(fecha, hora, servicio);
@@ -180,7 +203,7 @@ function enviarReserva(fecha, hora, servicio) {
                     });
                 }
             } catch (e) {
-                console.error("Error al parsear JSON:", e);
+                console.error('Error al parsear JSON:', e);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error inesperado',
