@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     document.getElementById('usuario-id').value = usuarioId;
 
-    // Cargar datos usuario
+    // Cargar datos usuario (incluyendo teléfono) desde la base de datos
     fetch(`../backend/obtener_usuario.php?id=${usuarioId}`)
         .then(res => {
             if (!res.ok) throw new Error('Error al obtener datos del usuario');
@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('nombre').value = data.nombre || '';
             document.getElementById('email').value = data.email || '';
             document.getElementById('rol').value = data.rol || 'cliente';
+            document.getElementById('telefono').value = data.telefono || ''; // Rellenar con el teléfono actual
         })
         .catch(err => {
             mensajeDiv.textContent = err.message;
@@ -50,8 +51,9 @@ form.addEventListener('submit', e => {
     const nombre = document.getElementById('nombre').value.trim();
     const email = document.getElementById('email').value.trim();
     const rol = document.getElementById('rol').value;
+    const telefono = document.getElementById('telefono').value.trim();
 
-    if (!nombre || !email) {
+    if (!nombre || !email || !telefono) {
         Swal.fire({
             icon: 'warning',
             title: 'Campos incompletos',
@@ -62,7 +64,7 @@ form.addEventListener('submit', e => {
         return;
     }
 
-    const datos = { id, nombre, email, rol };
+    const datos = { id, nombre, email, rol, telefono };
 
     fetch('../backend/actualizar_usuario.php', {
             method: 'POST',

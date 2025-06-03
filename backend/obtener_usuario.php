@@ -17,7 +17,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = intval($_GET['id']);
 $conexion = obtenerConexion();
 
-$sql = "SELECT id, nombre, email, rol FROM usuarios WHERE id = ?";
+$sql = "SELECT id, nombre, email, rol, telefono FROM usuarios WHERE id = ?";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
