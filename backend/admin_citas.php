@@ -10,7 +10,10 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
 // Obtener la conexión usando la función que tienes
 $conexion = obtenerConexion();
 
-$sql = "SELECT * FROM citas ORDER BY fecha DESC, hora DESC";
+$sql = "SELECT c.*, u.nombre AS nombre_cliente, u.telefono 
+        FROM citas c
+        JOIN usuarios u ON c.user_id = u.id
+        ORDER BY c.fecha DESC, c.hora DESC";
 $resultado = mysqli_query($conexion, $sql);
 
 if (!$resultado) {

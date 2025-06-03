@@ -83,7 +83,7 @@ function cargarHistorialCitas() {
                 tbody.querySelectorAll('.btn-editar').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const citaId = btn.getAttribute('data-id');
-                        window.location.href = `editar_cita.html?id=${citaId}&origen=historial_citas.html`;
+                        window.location.href = `editar_cita_cliente.html?id=${citaId}&origen=historial_citas.html`;
                     });
                 });
 

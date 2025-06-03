@@ -13,11 +13,12 @@ $user_id = $_SESSION[ 'usuario' ][ 'id' ];
 // Obtener conexión usando la función de config.php
 $conn = obtenerConexion();
 
-$sql = "SELECT c.id, c.nombre_cliente, c.telefono, c.fecha, c.hora, c.servicio, c.estado 
+$sql = "SELECT c.id, u.nombre AS nombre_cliente, u.telefono, c.fecha, c.hora, c.servicio, c.estado 
         FROM citas c
         INNER JOIN usuarios u ON c.user_id = u.id
         WHERE u.id = ?
         ORDER BY c.fecha DESC, c.hora DESC";
+
 
 $stmt = $conn->prepare( $sql );
 if ( !$stmt ) {
