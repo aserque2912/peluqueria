@@ -84,7 +84,7 @@ if (!$fechaHoraCita || $fechaHoraCita <= $ahora) {
 }
 // --- FIN VALIDACIÓN ---
 
-if ($servicio === 'tinte') {
+if ($servicio === 'Tinte') {
     $horaDateTime = new DateTime("$fecha $hora_normalizada");
     $horasOcupadas = obtenerHorasOcupadas($fecha);
 
@@ -99,7 +99,7 @@ if ($servicio === 'tinte') {
         if ($bloque > $horaCierre) {
             echo json_encode([
                 'success' => false,
-                'error' => 'El servicio del tinte dura 2 horas aprox y no puedes hacer una reserva para un servicio que se extienda más allá de la hora de cierre (20:00).',
+                'error' => 'El servicio del Tinte dura 2 horas aprox y no puedes hacer una reserva para un servicio que se extienda más allá de la hora de cierre (20:00).',
                 'debug' => [
                     'hora_inicial' => $hora,
                     'bloques_bloqueados' => $bloques,
@@ -116,7 +116,7 @@ if ($servicio === 'tinte') {
         if (in_array($bloque, $horasOcupadas)) {
             echo json_encode([
                 'success' => false,
-                'error' => 'No puedes reservar este tinte porque una de las horas posteriores ya está ocupada.',
+                'error' => 'No puedes reservar este Tinte porque una de las horas posteriores ya está ocupada.',
                 'debug' => [
                     'hora_inicial' => $hora,
                     'bloques_bloqueados' => $bloques,

@@ -20,14 +20,14 @@ fetch('../backend/check_session.php')
     });
 
 // Limita la fecha mínima al día de hoy en el selector
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const inputFecha = document.getElementById('fecha');
     if (inputFecha) {
         inputFecha.min = new Date().toISOString().split('T')[0];
     }
 });
 
-document.getElementById('fecha').addEventListener('change', function () {
+document.getElementById('fecha').addEventListener('change', function() {
     const fecha = this.value;
     const servicio = document.getElementById('servicio').value;
 
@@ -40,7 +40,7 @@ document.getElementById('fecha').addEventListener('change', function () {
 
                 const horasDisponibles = data.horas_disponibles;
 
-                if (servicio === 'tinte') {
+                if (servicio === 'Tinte') {
                     const bloqueadas = new Set();
 
                     horasDisponibles.forEach(hora => {
@@ -81,7 +81,7 @@ document.getElementById('fecha').addEventListener('change', function () {
     }
 });
 
-document.getElementById('citaForm').addEventListener('submit', function (e) {
+document.getElementById('citaForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const fecha = document.getElementById('fecha').value;
@@ -113,7 +113,7 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
         return;
     }
 
-    if (servicio === 'tinte') {
+    if (servicio === 'Tinte') {
         const horaDateTime = new Date(`${fecha}T${hora}`);
         const horaPlus1 = new Date(horaDateTime.getTime() + 60 * 60 * 1000);
         const horaPlus2 = new Date(horaDateTime.getTime() + 120 * 60 * 1000);
@@ -130,7 +130,7 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Tinte no disponible',
-                        html: data.error || 'No puedes reservar un tinte porque las 2 horas siguientes a la cita no están disponibles.',
+                        html: data.error || 'No puedes reservar un Tinte porque las 2 horas siguientes a la cita no están disponibles.',
                         confirmButtonColor: '#d33'
                     });
 
@@ -153,10 +153,10 @@ document.getElementById('citaForm').addEventListener('submit', function (e) {
 
 function enviarReserva(fecha, hora, servicio) {
     fetch('../backend/reservar_cita.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fecha, hora, servicio })
-    })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fecha, hora, servicio })
+        })
         .then(response => response.text())
         .then(text => {
             try {

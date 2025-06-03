@@ -23,7 +23,7 @@ while ($row = $result->fetch_assoc()) {
     $hora = (new DateTime("1970-01-01 {$row['hora']}"))->format('H:i');
     $horasOcupadas[] = $hora;
 
-    if ($row['servicio'] === 'tinte') {
+    if ($row['servicio'] === 'Tinte') {
         $base = new DateTime("1970-01-01 $hora");
         for ($i = 1; $i <= 4; $i++) {
             $bloque = clone $base;

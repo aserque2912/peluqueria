@@ -126,14 +126,14 @@ prevBtn.addEventListener("click", () => {
     showSlide(index);
 });
 
-let autoPlay = setInterval(() => {
+let autoPlay = seTinterval(() => {
     index++;
     showSlide(index);
 }, 4000);
 
 carousel.addEventListener("mouseover", () => clearInterval(autoPlay));
 carousel.addEventListener("mouseleave", () => {
-    autoPlay = setInterval(() => {
+    autoPlay = seTinterval(() => {
         index++;
         showSlide(index);
     }, 4000);
