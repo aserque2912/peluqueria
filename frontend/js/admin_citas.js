@@ -38,11 +38,13 @@ fetch('../backend/admin_citas.php')
             // Servicio
             const tdServicio = document.createElement('td');
             tdServicio.textContent = cita.servicio;
+            tdServicio.classList.add('td-servicio');
             tr.appendChild(tdServicio);
 
             // Estado
             const tdEstado = document.createElement('td');
             tdEstado.textContent = cita.estado;
+            tdEstado.classList.add('td-estado');
             tr.appendChild(tdEstado);
 
             // Acción - botones editar y eliminar
@@ -68,7 +70,7 @@ fetch('../backend/admin_citas.php')
                 tdAccion.appendChild(btnEditar);
             }
 
-            // Botón eliminar siempre visible o sólo para futuras, si quieres igualarlo cambia aquí
+            // Botón eliminar siempre visible
             const btnEliminar = document.createElement('button');
             btnEliminar.classList.add('btn', 'btn-sm', 'btn-eliminar');
             btnEliminar.setAttribute('data-id', cita.id);

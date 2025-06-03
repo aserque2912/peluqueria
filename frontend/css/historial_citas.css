@@ -122,3 +122,14 @@ label,
         padding: 15px 10px;
     }
 }
+
+
+/* ----------------------------------------------------
+   Aplica mayúscula inicial a cada palabra en Servicio y Estado
+------------------------------------------------------- */
+
+.td-servicio,
+.td-estado {
+    /* Esto hace que “corte” se vea como “Corte”, “pendiente” como “Pendiente”, etc. */
+    text-transform: capitalize;
+}

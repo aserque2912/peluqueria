@@ -47,8 +47,8 @@ function cargarHistorialCitas() {
             <td>${cita.telefono}</td>
             <td>${cita.fecha}</td>
             <td>${cita.hora}</td>
-            <td>${cita.servicio}</td>
-            <td>${cita.estado}</td>
+            <td class="td-servicio">${cita.servicio}</td>
+            <td class="td-estado">${cita.estado}</td>
             <td class="accion"></td>
           `;
 
