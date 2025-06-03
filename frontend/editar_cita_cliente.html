@@ -90,8 +90,8 @@
                     <label for="servicio" class="form-label">Servicio:</label>
                     <select id="servicio" name="servicio" class="form-select" required>
               <option value="" disabled>Seleccione un servicio</option>
-              <option value="Corte">Corte</option>
-              <option value="Barba">Barba</option>
+              <option value="corte">Corte</option>
+              <option value="barba">Barba</option>
               <option value="tinte">Tinte</option>
             </select>
                 </div>
@@ -109,7 +109,14 @@
                     <label class="form-label">Estado:</label>
                     <input type="text" id="estado" class="form-control" readonly>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Actualizar cita</button>
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        Actualizar cita
+                    </button>
+                    <a href="historial_citas.html" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left me-1"></i> Volver
+                    </a>
+                </div>
             </form>
         </div>
     </div>
