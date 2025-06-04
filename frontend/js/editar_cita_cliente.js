@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const telefonoInput = document.getElementById('telefono_cliente');
     const estadoInput = document.getElementById('estado');
 
+    // Función para capitalizar la primera letra del estado
+    function capitalizeFirstLetter(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
     function cargarHorasDisponibles(fecha, servicio, citaId, horaActual = null) {
         if (!fecha || !servicio) {
             horaSelect.innerHTML = '<option value="">Selecciona fecha y servicio</option>';
@@ -26,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     horaSelect.innerHTML = horas.map(hora => {
                         return `<option value="${hora}">${hora}</option>`;
                     }).join('');
+
                     // Selecciona la hora exacta de la cita
                     if (horaActual) horaSelect.value = horaActual.slice(0, 5);
                 } else {
@@ -35,9 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!citaId) {
-        Swal.fire('Error', 'ID de cita no especificado.', 'error').then(() => {
-            window.location.href = 'historial_citas.html';
-        });
+        Swal.fire('Error', 'ID de cita no especificado.', 'error')
+            .then(() => window.location.href = 'historial_citas.html');
         return;
     }
 
@@ -46,13 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(data => {
             if (data.error) {
-                Swal.fire('Error', data.error, 'error').then(() => {
-                    window.location.href = 'historial_citas.html';
-                });
+                Swal.fire('Error', data.error, 'error')
+                    .then(() => window.location.href = 'historial_citas.html');
             } else {
                 if (nombreInput) nombreInput.value = data.nombre_cliente || '';
                 if (telefonoInput) telefonoInput.value = data.telefono || '';
-                if (estadoInput) estadoInput.value = data.estado || '';
+                if (estadoInput) {
+                    // Asignamos el estado con la primera letra en mayúscula
+                    estadoInput.value = capitalizeFirstLetter(data.estado || '');
+                }
+
                 for (let option of servicioSelect.options) {
                     if (option.value.toLowerCase() === (data.servicio || '').toLowerCase()) {
                         servicioSelect.value = option.value;
@@ -68,29 +77,32 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire('Error', 'No se pudo cargar la cita', 'error');
         });
 
-    fechaInput.addEventListener('change', () => {
-        cargarHorasDisponibles(fechaInput.value, servicioSelect.value, citaId);
-    });
-    servicioSelect.addEventListener('change', () => {
-        cargarHorasDisponibles(fechaInput.value, servicioSelect.value, citaId);
-    });
-
     form.addEventListener('submit', e => {
         e.preventDefault();
-        const formData = new FormData(form);
-        formData.append('id', citaId);
 
-        fetch('../backend/editar_cita_cliente.php', {
+        const updatedServicio = servicioSelect.value;
+        const updatedFecha = fechaInput.value;
+        const updatedHora = horaSelect.value;
+        // El estado se mantiene (readonly), no se envía para cambiar
+        const datos = {
+            id: citaId,
+            servicio: updatedServicio,
+            fecha: updatedFecha,
+            hora: updatedHora
+        };
+
+        fetch('../backend/actualizar_cita.php', {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
             })
             .then(res => res.json())
-            .then(data => {
-                if (data.success) {
+            .then(resp => {
+                if (resp.success) {
                     Swal.fire('Actualizado', 'La cita se actualizó correctamente', 'success')
                         .then(() => window.location.href = 'historial_citas.html');
                 } else {
-                    Swal.fire('Error', data.message || 'No se pudo actualizar la cita', 'error');
+                    Swal.fire('Error', resp.message || 'No se pudo actualizar la cita', 'error');
                 }
             })
             .catch(() => {
