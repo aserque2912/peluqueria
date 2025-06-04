@@ -1,3 +1,17 @@
+// Función para mapear el estado a la clase de badge de Bootstrap
+function claseBadgePorEstado(estado) {
+    switch (estado.toLowerCase()) {
+        case 'pendiente':
+            return 'badge bg-warning'; // amarillo
+        case 'confirmada':
+            return 'badge bg-success'; // verde
+        case 'cancelada':
+            return 'badge bg-danger'; // rojo
+        default:
+            return 'badge bg-secondary'; // gris para cualquier otro caso
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarHistorialCitas();
 });
@@ -48,14 +62,22 @@ function cargarHistorialCitas() {
             <td>${cita.fecha}</td>
             <td>${cita.hora}</td>
             <td class="td-servicio">${cita.servicio}</td>
-            <td class="td-estado">${cita.estado}</td>
+            <td class="td-estado"></td>
             <td class="accion"></td>
           `;
 
-                    const tdAccion = fila.querySelector('.accion');
+                    // Insertar badge dentro de la celda de estado
+                    const tdEstado = fila.querySelector('.td-estado');
+                    const spanBadge = document.createElement('span');
+                    const textoEstado = cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1).toLowerCase();
+                    spanBadge.textContent = textoEstado;
+                    spanBadge.className = claseBadgePorEstado(cita.estado);
+                    tdEstado.appendChild(spanBadge);
 
+                    // Celda de acciones (editar / eliminar)
+                    const tdAccion = fila.querySelector('.accion');
                     if (fechaHoraCita >= ahora) {
-                        // Botón editar sin recuadro ni fondo, solo icono
+                        // Botón editar (solo icono, sin fondo)
                         const btnEditar = document.createElement('button');
                         btnEditar.classList.add('btn-editar', 'btn', 'btn-sm', 'btn-outline-dark', 'me-2');
                         btnEditar.style.background = 'transparent';
@@ -153,6 +175,7 @@ function cargarHistorialCitas() {
                         });
                     });
                 });
+
             } else {
                 tbody.innerHTML = '';
                 mensajeError.style.display = 'block';

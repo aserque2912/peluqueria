@@ -1,3 +1,17 @@
+// Función para mapear el estado a la clase de badge de Bootstrap
+function claseBadgePorEstado(estado) {
+    switch (estado.toLowerCase()) {
+        case 'pendiente':
+            return 'badge bg-warning'; // amarillo
+        case 'confirmada':
+            return 'badge bg-success'; // verde
+        case 'cancelada':
+            return 'badge bg-danger'; // rojo
+        default:
+            return 'badge bg-secondary'; // gris para cualquier otro caso
+    }
+}
+
 fetch('../backend/admin_citas.php')
     .then(response => {
         if (!response.ok) throw new Error('No autorizado o error en la consulta');
@@ -41,10 +55,14 @@ fetch('../backend/admin_citas.php')
             tdServicio.classList.add('td-servicio');
             tr.appendChild(tdServicio);
 
-            // Estado
+            // Estado (con badge)
             const tdEstado = document.createElement('td');
-            tdEstado.textContent = cita.estado;
-            tdEstado.classList.add('td-estado');
+            const spanBadge = document.createElement('span');
+            // Poner la primera letra en mayúscula
+            const textoEstado = cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1).toLowerCase();
+            spanBadge.textContent = textoEstado;
+            spanBadge.className = claseBadgePorEstado(cita.estado);
+            tdEstado.appendChild(spanBadge);
             tr.appendChild(tdEstado);
 
             // Acción - botones editar y eliminar
@@ -79,7 +97,6 @@ fetch('../backend/admin_citas.php')
             tdAccion.appendChild(btnEliminar);
 
             tr.appendChild(tdAccion);
-
             tbody.appendChild(tr);
         });
 
