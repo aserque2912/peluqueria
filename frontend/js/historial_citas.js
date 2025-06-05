@@ -91,7 +91,7 @@ function cargarHistorialCitas() {
 
                         // Botón eliminar
                         const btnEliminar = document.createElement('button');
-                        btnEliminar.classList.add('btn-eliminar', 'btn', 'btn-sm', 'btn-danger');
+                        btnEliminar.classList.add('btn-eliminar', 'btn', 'btn-sm');
                         btnEliminar.title = 'Eliminar cita';
                         btnEliminar.setAttribute('data-id', cita.id);
                         btnEliminar.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
