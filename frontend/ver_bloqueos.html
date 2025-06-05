@@ -4,24 +4,32 @@
 <head>
     <meta charset="UTF-8" />
     <title>Horarios Bloqueados</title>
+
+    <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="./css/historial_citas.css" />
-    <link rel="stylesheet" href="./css/navbar.css" />
+    <!-- DataTables Bootstrap5 CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/solid.min.css" rel="stylesheet">
-
-
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/solid.min.css" rel="stylesheet" />
+    <!-- Navbar y estilos propios -->
+    <link rel="stylesheet" href="./css/navbar.css" />
+    <link rel="stylesheet" href="./css/historial_citas.css" />
+    <link rel="stylesheet" href="./css/ver_bloqueos.css" />
 </head>
 
 <body>
+    <!-- ======================
+         B A R R A   N A V
+         ====================== -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top" style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.75);">
             <div class="container">
                 <!-- IZQUIERDA: LOGO + NOMBRE -->
                 <a class="navbar-brand d-flex align-items-center" href="index.html">
-                    <img src="img/900.jpg" alt="Logo" height="55" class="me-2 rounded-circle shadow">
+                    <img src="img/900.jpg" alt="Logo" height="55" class="me-2 rounded-circle shadow" />
                     <span class="fw-semibold">Serranos's Barber</span>
                 </a>
 
@@ -37,37 +45,57 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- MENÚ -->
+                <!-- MENÚ DERECHA -->
                 <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
                     <ul class="navbar-nav align-items-center">
                         <!-- Aparece si no hay una sesión iniciada -->
                         <div id="authLinks">
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar
-                                    sesión</a>
+                                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar sesión</a
+                                >
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i>
-                                    Registrarse</a>
+                                <a class="nav-link fw-bold" href="register.html"
+                                    ><i class="fa-solid fa-user-plus"></i> Registrarse</a
+                                >
                             </li>
                         </div>
 
-                        <!-- Aparece si hay una sesión iniciada -->
+                        <!-- Aparece si hay sesión iniciada -->
                         <div id="userLinks" style="display: none;">
-                            <span class="navbar-text text-white" style="font-size: 0.9rem; padding: 8px 15px;">
+                            <span
+                                class="navbar-text text-white"
+                                style="font-size: 0.9rem; padding: 8px 15px;"
+                            >
                                 Hola, <span id="userName"></span>
                             </span>
-
-                            <!-- Dropdown para Historial de Citas y cerrar sesión -->
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Mi Cuenta
-                                </a>
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    href="#"
+                                    id="navbarDropdown"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    >Mi Cuenta</a
+                                >
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis
-                                            Citas</a></li>
-                                    <li><a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar
-                                            sesión</a></li>
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="historial_citas.html"
+                                            id="historialCitasLink"
+                                            >Mis Citas</a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="../backend/logout.php"
+                                            id="logoutLink"
+                                            >Cerrar sesión</a
+                                        >
+                                    </li>
                                 </ul>
                             </li>
                         </div>
@@ -77,35 +105,95 @@
         </nav>
     </header>
 
+    <!-- ==========================
+         C O N T E N E D O R   P R I N C I P A L
+         ========================== -->
     <main class="container pt-5 mt-5">
-        <div class="table-wrapper mx-auto">
-            <h2 class="text-center mb-4">Horarios Bloqueados</h2>
+        <div class="card-container mx-auto">
+            <!-- Título de la pantalla -->
+            <h2 class="card-title">Horarios Bloqueados</h2>
 
-            <div class="row mb-3">
+            <!-- ==========================
+                 F I L T R O S   Y   B O T O N E S
+                 ========================== -->
+            <form class="row g-3 filtros-form mb-4">
+                <!-- Filtrar por fecha -->
                 <div class="col-md-4">
                     <label for="filtroFecha" class="form-label">Filtrar por fecha:</label>
-                    <input type="date" id="filtroFecha" class="form-control">
+                    <input type="date" id="filtroFecha" class="form-control" />
                 </div>
+
+                <!-- Filtrar por hora -->
                 <div class="col-md-4">
                     <label for="filtroHora" class="form-label">Filtrar por hora:</label>
                     <select id="filtroHora" class="form-select">
-            <option value="">Todas</option>
-            <option value="08:00:00">08:00</option><option value="08:30:00">08:30</option><option value="09:00:00">09:00</option><option value="09:30:00">09:30</option><option value="10:00:00">10:00</option><option value="10:30:00">10:30</option><option value="11:00:00">11:00</option><option value="11:30:00">11:30</option><option value="12:00:00">12:00</option><option value="12:30:00">12:30</option><option value="13:00:00">13:00</option><option value="13:30:00">13:30</option><option value="14:00:00">14:00</option><option value="14:30:00">14:30</option><option value="15:00:00">15:00</option><option value="15:30:00">15:30</option><option value="16:00:00">16:00</option><option value="16:30:00">16:30</option><option value="17:00:00">17:00</option><option value="17:30:00">17:30</option><option value="18:00:00">18:00</option><option value="18:30:00">18:30</option><option value="19:00:00">19:00</option><option value="19:30:00">19:30</option><option value="20:00:00">20:00</option>
-          </select>
+                        <option value="">Todas</option>
+                        <option value="08:00:00">08:00</option>
+                        <option value="08:30:00">08:30</option>
+                        <option value="09:00:00">09:00</option>
+                        <option value="09:30:00">09:30</option>
+                        <option value="10:00:00">10:00</option>
+                        <option value="10:30:00">10:30</option>
+                        <option value="11:00:00">11:00</option>
+                        <option value="11:30:00">11:30</option>
+                        <option value="12:00:00">12:00</option>
+                        <option value="12:30:00">12:30</option>
+                        <option value="13:00:00">13:00</option>
+                        <option value="13:30:00">13:30</option>
+                        <option value="14:00:00">14:00</option>
+                        <option value="14:30:00">14:30</option>
+                        <option value="15:00:00">15:00</option>
+                        <option value="15:30:00">15:30</option>
+                        <option value="16:00:00">16:00</option>
+                        <option value="16:30:00">16:30</option>
+                        <option value="17:00:00">17:00</option>
+                        <option value="17:30:00">17:30</option>
+                        <option value="18:00:00">18:00</option>
+                        <option value="18:30:00">18:30</option>
+                        <option value="19:00:00">19:00</option>
+                        <option value="19:30:00">19:30</option>
+                        <option value="20:00:00">20:00</option>
+                    </select>
                 </div>
-                <div class="col-md-4">
-                    <label for="fechaBorrar" class="form-label">Eliminar todos los bloqueos de:</label>
+
+                <!-- Limpiar filtros -->
+                <div class="col-md-2 d-flex align-items-end">
+                    <button
+                        type="button"
+                        id="btnLimpiarFiltros"
+                        class="btn btn-outline-secondary w-100"
+                    >
+                        <i class="fa-solid fa-filter-circle-xmark me-1"></i>
+                        Limpiar
+                    </button>
+                </div>
+
+                <!-- Eliminar todos los bloqueos de un día -->
+                <div class="col-md-6">
+                    <label for="fechaBorrar" class="form-label"
+                        >Eliminar todos los bloqueos de:</label
+                    >
                     <div class="d-flex gap-2">
-                        <input type="date" id="fechaBorrar" class="form-control">
-                        <button class="btn btn-danger fw-bold" id="btnBorrarBloqueos">
-             <i class="fa-regular fa-trash-can"></i> Borrar todos
-            </button>
+                        <input type="date" id="fechaBorrar" class="form-control" />
+                        <button
+                            class="btn btn-danger fw-bold"
+                            id="btnBorrarBloqueos"
+                            type="button"
+                        >
+                            <i class="fa-regular fa-trash-can me-1"></i> Borrar todos
+                        </button>
                     </div>
                 </div>
-            </div>
+            </form>
 
+            <!-- ==========================
+                 T A B L A DE BLOQUEOS
+                 ========================== -->
             <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle text-center rounded" id="bloqueosTable">
+                <table
+                    class="table table-bordered table-striped align-middle text-center rounded"
+                    id="bloqueosTable"
+                >
                     <thead class="table-dark">
                         <tr>
                             <th>FECHA</th>
@@ -122,13 +210,24 @@
         </div>
     </main>
 
+    <!-- ===================================
+         S C R I P T S   Y   L I B R E R Í A S
+         =================================== -->
+    <!-- jQuery (necesario para DataTables) -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="./js/ver_bloqueos.js"></script>
+    <!-- Tu propio index.js (gestión de sesión, etc.) -->
     <script src="./js/index.js"></script>
+    <!-- Script para ver bloqueos -->
+    <script src="./js/ver_bloqueos.js"></script>
 </body>
 
 </html>

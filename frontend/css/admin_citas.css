@@ -1,0 +1,94 @@
+/* ===================================
+       Ajustes generales
+       =================================== */
+
+body {
+    background-color: #f0f2f5;
+}
+
+
+/* Contenedor de la tarjeta blanca */
+
+.card-container {
+    margin: 100px auto 50px;
+    max-width: 1200px;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Título centrado dentro de la tarjeta */
+
+.card-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+
+/* Contenedor de filtros: display flex con wrap */
+
+.filtros-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2rem;
+    align-items: flex-end;
+    margin-bottom: 1.75rem;
+    justify-content: center;
+}
+
+.filtros-inline .form-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.filtros-inline .form-control,
+.filtros-inline .form-select {
+    width: 180px;
+}
+
+
+/* Ajustes para los botones de filtros */
+
+.filtros-inline .btn {
+    height: 38px;
+    padding: 0 1rem;
+}
+
+
+/* Estilos para el texto “Cargando citas...” */
+
+.loading {
+    font-style: italic;
+    color: #666;
+}
+
+
+/* ===================================
+       Estilos para impresión
+       =================================== */
+
+@media print {
+    body {
+        background-color: #fff !important;
+    }
+    header,
+    .filtros-inline,
+    #btn-imprimir,
+    #btn-reset-filtros {
+        display: none !important;
+    }
+    .card-container {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    #tabla-citas {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+}
