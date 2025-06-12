@@ -26,7 +26,7 @@ if (
     !$fecha   ||
     !$hora    ||
     !$servicio||
-    !$usuario_id ||
+    !$usuario_id 
 ) {
     echo json_encode([
         'success' => false,
