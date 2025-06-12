@@ -99,12 +99,6 @@ label {
     margin: 0 auto;
 }
 
-@media (min-width: 576px) {
-    .container-custom {
-        padding: 40px 35px;
-    }
-}
-
 
 /* Forzar margen inferior más pequeño en input fecha */
 
