@@ -1,3 +1,6 @@
+// index.js
+
+// 1) Verificar si el usuario está autenticado al cargar la página
 fetch('../backend/check_session.php')
     .then(response => response.json())
     .then(data => {
@@ -59,13 +62,29 @@ fetch('../backend/check_session.php')
                 // Enlace "Horarios Bloqueados"
                 if (dropdownMenu && !document.getElementById('verBloqueosLink')) {
                     const liBloqueos = document.createElement('li');
-                    liBloqueos.innerHTML = `<a class="dropdown-item" href="ver_bloqueos.html" id="verBloqueosLink">Horarios Bloqueados</a>`;
+                    liBloqueos.innerHTML = `<a class="dropdown-item" href="../frontend/ver_bloqueos.html" id="verBloqueosLink">Horarios Bloqueados</a>`;
 
                     const logoutLink = document.getElementById('logoutLink');
                     if (logoutLink && logoutLink.parentElement) {
                         dropdownMenu.insertBefore(liBloqueos, logoutLink.parentElement);
                     } else {
                         dropdownMenu.appendChild(liBloqueos);
+                    }
+                }
+
+                // ** Nuevo: Enlace "Imágenes del Carrusel" **
+                if (dropdownMenu && !document.getElementById('adminCarouselLink')) {
+                    const liCarousel = document.createElement('li');
+                    liCarousel.innerHTML = `
+                        <a class="dropdown-item" href="../frontend/admin_carousel.html" id="adminCarouselLink">
+                            Imágenes del Carrusel
+                        </a>
+                    `;
+                    const logoutLink = document.getElementById('logoutLink');
+                    if (logoutLink && logoutLink.parentElement) {
+                        dropdownMenu.insertBefore(liCarousel, logoutLink.parentElement);
+                    } else {
+                        dropdownMenu.appendChild(liCarousel);
                     }
                 }
             }
@@ -102,39 +121,109 @@ fetch('../backend/check_session.php')
         document.getElementById('userLinks').style.display = 'none';
     });
 
-// Resto del código carousel ...
-const carousel = document.querySelector(".carousel");
-const slides = document.querySelectorAll(".carousel-slide");
+
+// --------------------------------------
+// Resto del código: carrusel dinámico
+// --------------------------------------
+
+// Referencias al carrusel y sus controles
+const carouselContainer = document.querySelector(".carousel"); // contenedor donde inyectaremos los slides
 const nextBtn = document.querySelector(".carousel-btn.next");
 const prevBtn = document.querySelector(".carousel-btn.prev");
 
+let slides = []; // Array de elementos .carousel-slide creados
 let index = 0;
+let autoPlay = null;
 
 function showSlide(i) {
+    if (!slides.length) return;
     if (i >= slides.length) index = 0;
     if (i < 0) index = slides.length - 1;
-    carousel.style.transform = `translateX(-${index * 100}%)`;
+    carouselContainer.style.transform = `translateX(-${index * 100}%)`;
 }
 
-nextBtn.addEventListener("click", () => {
-    index++;
-    showSlide(index);
-});
+// 1) Cargar las imágenes desde el backend y generar los slides en el DOM
+function loadCarouselImages() {
+    if (!carouselContainer) return;
 
-prevBtn.addEventListener("click", () => {
-    index--;
-    showSlide(index);
-});
+    fetch('../backend/get_carousel.php')
+        .then(res => res.json())
+        .then(resp => {
+            if (!resp.success) return;
 
-let autoPlay = seTinterval(() => {
-    index++;
-    showSlide(index);
-}, 4000);
+            // Limpiamos cualquier contenido anterior
+            carouselContainer.innerHTML = '';
+            slides = [];
 
-carousel.addEventListener("mouseover", () => clearInterval(autoPlay));
-carousel.addEventListener("mouseleave", () => {
-    autoPlay = seTinterval(() => {
-        index++;
-        showSlide(index);
-    }, 4000);
+            resp.data.forEach(item => {
+                // Creamos un <div class="carousel-slide"> por cada imagen
+                const slideDiv = document.createElement('div');
+                slideDiv.classList.add('carousel-slide');
+
+                const imgTag = document.createElement('img');
+                imgTag.src = `img/carousel/${item.filename}`;
+                imgTag.alt = item.caption || '';
+                imgTag.style.width = '100%';
+                imgTag.style.display = 'block';
+
+                slideDiv.appendChild(imgTag);
+                carouselContainer.appendChild(slideDiv);
+                slides.push(slideDiv);
+            });
+
+            // Una vez creados los slides, inicializamos controles y autoplay
+            setupCarouselControls();
+            showSlide(0);
+        })
+        .catch(err => {
+            console.error('Error al cargar imágenes del carrusel:', err);
+        });
+}
+
+// 2) Asociar listeners a botones "next"/"prev" y configurar autoplay
+function setupCarouselControls() {
+    // Reiniciar autoplay si ya existía
+    if (autoPlay) {
+        clearInterval(autoPlay);
+        autoPlay = null;
+    }
+
+    // Next
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            index++;
+            showSlide(index);
+        });
+    }
+
+    // Prev
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            index--;
+            showSlide(index);
+        });
+    }
+
+    // Autoplay cada 4 segundos
+    if (carouselContainer && slides.length > 0) {
+        autoPlay = setInterval(() => {
+            index++;
+            showSlide(index);
+        }, 4000);
+
+        carouselContainer.addEventListener('mouseover', () => {
+            if (autoPlay) clearInterval(autoPlay);
+        });
+        carouselContainer.addEventListener('mouseleave', () => {
+            autoPlay = setInterval(() => {
+                index++;
+                showSlide(index);
+            }, 4000);
+        });
+    }
+}
+
+// Invocar la carga al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    loadCarouselImages();
 });
