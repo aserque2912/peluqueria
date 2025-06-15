@@ -1,100 +1,43 @@
 <?php
-/*
-Este fichero hay que incluirlo en cada script del proyecto.
-De esta manera:
- - podrás usar la información que aparece aquí en cualquier parte
- - sólo necesitas actualizar este fichero para reflejar cualquier
-   cambio en toda la aplicación
-*/
+// Fuerza JSON y UTF-8 en las respuestas
+header('Content-Type: application/json; charset=utf-8');
 
-/* Array asociativo con la configuración de conexión a la base de datos */
-$basedatos = array(
-    "basedatos" => "peluqueria",
-    "usuario" => "root",
-    "password" => "test",
-    "servidor" => "db",
-    "puerto" => 3306
-);
+// 1) Leer vars de entorno (Railway inyecta estas)
+$dbHost = getenv('MYSQLHOST')    ?: getenv('MYSQL_HOST')    ?: null;
+$dbName = getenv('MYSQLDATABASE')?: getenv('MYSQL_DATABASE')?: null;
+$dbUser = getenv('MYSQLUSER')    ?: getenv('MYSQL_USER')    ?: null;
+$dbPass = getenv('MYSQLPASSWORD')?: getenv('MYSQL_PASSWORD')?: null;
+$dbPort = getenv('MYSQLPORT')    ?: getenv('MYSQL_PORT')    ?: 3306;
 
-/* ERROR REPORTING */
-error_reporting(E_ERROR);
-mysqli_report(MYSQLI_REPORT_OFF);
-
-/* FUNCIONES COMUNES */
-
-// Función para obtener la conexión a la base de datos
-function obtenerConexion()
-{
-    global $basedatos; // recuperamos el array con la conexión
-
-    $conexion = new mysqli($basedatos["servidor"], $basedatos["usuario"], $basedatos["password"], $basedatos["basedatos"], $basedatos["puerto"]);
-
-    if ($conexion->connect_errno) {
-        die("Error al conectar a la base de datos: " . $conexion->connect_error);
-    }
-
-    mysqli_set_charset($conexion, "utf8");
-    return $conexion;
+// 2) Verificar que todas existan
+if (!$dbHost || !$dbName || !$dbUser || $dbPass===false) {
+    echo json_encode([
+      'success' => false,
+      'message' => 'Faltan vars de entorno de la DB',
+      'debug' => [
+        'dbHost' => $dbHost,
+        'dbName' => $dbName,
+        'dbUser' => $dbUser,
+        'dbPass' => $dbPass,
+        'dbPort' => $dbPort,
+      ]
+    ]);
+    exit;
 }
 
-// Función para enviar la respuesta al cliente
-function responder($datos, $ok, $mensaje, $conexion)
-{
-    $respuesta["ok"] = $ok; 
-    $respuesta["datos"] = $datos; 
-    $respuesta["mensaje"] = $mensaje; 
-
-    echo json_encode($respuesta);
-    mysqli_close($conexion);
-
-    if ($ok == false) {
-        exit(1);
-    } else {
-        exit(0);
-    }
+// 3) Conectar
+$mysqli = @new mysqli($dbHost, $dbUser, $dbPass, $dbName, (int)$dbPort);
+if ($mysqli->connect_errno) {
+    echo json_encode([
+      'success' => false,
+      'message' => "Error de conexión ({$mysqli->connect_errno}): {$mysqli->connect_error}"
+    ]);
+    exit;
 }
 
-// Función para obtener las citas de una fecha
-function obtenerCitas($fecha) {
-    $conexion = obtenerConexion();  // Obtener la conexión
-
-    $sql = "SELECT * FROM citas WHERE fecha = ? ORDER BY hora";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("s", $fecha); // 's' es para string
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-    $citas = [];
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $citas[] = $row;
-        }
-    }
-    $conexion->close();
-    return $citas;
-}
-
-// Función para agregar una cita
-function agregarCita($nombre, $telefono, $fecha, $hora, $servicio) {
-    $conexion = obtenerConexion();  // Obtener la conexión
-
-    // Validar y sanitizar los datos
-    $nombre = htmlspecialchars(strip_tags($nombre));
-    $telefono = htmlspecialchars(strip_tags($telefono));
-    $fecha = htmlspecialchars(strip_tags($fecha));
-    $hora = htmlspecialchars(strip_tags($hora));
-    $servicio = htmlspecialchars(strip_tags($servicio));
-
-    $sql = "INSERT INTO citas (nombre_cliente, telefono_cliente, fecha, hora, servicio) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("sssss", $nombre, $telefono, $fecha, $hora, $servicio);  // 'sssss' para cinco cadenas de texto
-    if ($stmt->execute()) {
-        $mensaje = "Cita agregada correctamente.";
-    } else {
-        $mensaje = "Error: " . $stmt->error;
-    }
-    $conexion->close();
-    return $mensaje;
-}
-
-?>
+// 4) Ok
+echo json_encode([
+  'success' => true,
+  'message' => "¡Conexión a {$dbName}@{$dbHost}:{$dbPort} exitosa!"
+]);
+exit;
