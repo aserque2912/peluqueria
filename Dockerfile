@@ -31,9 +31,9 @@ WORKDIR /var/www/html
 RUN chown -R www-data:www-data /var/www/html \
  && chmod -R 755 /var/www/html
 
-# 7) Prioriza landing.html como página de inicio
-RUN echo "DirectoryIndex landing.html" \
-    >> /etc/apache2/apache2.conf
+# 7) Prioriza landing.html antes que index.html en el VirtualHost
+RUN sed -i '/<VirtualHost \*:80>/a\    DirectoryIndex landing.html index.html' \
+    /etc/apache2/sites-enabled/000-default.conf
 
 # 8) Expone el puerto 80 y arranca Apache
 EXPOSE 80

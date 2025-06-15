@@ -4,7 +4,7 @@ body {
     background-image: url('../img/pexels-rdne-7697715.jpg');
     background-size: cover;
     background-position: center top;
-    background-repeat: no-repeat;
+    background-attachment: fixed;
     font-family: 'Arial', sans-serif;
     padding: 120px 20px 20px 20px;
 }

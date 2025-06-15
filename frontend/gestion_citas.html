@@ -23,55 +23,72 @@
 <body>
     <!-- NAVBAR -->
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top" style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.75);">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top"
+            style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.75);">
             <div class="container">
+
                 <!-- IZQUIERDA: LOGO + NOMBRE -->
                 <a class="navbar-brand d-flex align-items-center" href="index.html">
                     <img src="img/900.jpg" alt="Logo" height="55" class="me-2 rounded-circle shadow">
                     <span class="fw-semibold">Serranos's Barber</span>
                 </a>
 
-                <!-- CENTRO: PEDIR CITA CENTRADO -->
-                <div class="position-absolute start-50 translate-middle-x">
+                <!-- BOTÓN RESPONSIVE -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- PEDIR CITA: escritorio solo -->
+                <div class="position-absolute start-50 translate-middle-x d-none d-lg-block">
                     <a class="btn btn-outline-secondary fw-bold px-4 py-2 rounded-pill" href="gestion_citas.html">
                         <i class="fa-solid fa-scissors me-2"></i> Pedir Cita
                     </a>
                 </div>
 
-                <!-- BOTÓN RESPONSIVE -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
                 <!-- MENÚ -->
                 <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
                     <ul class="navbar-nav align-items-center">
-                        <!-- Aparece si no hay una sesión iniciada -->
+
+                        <!-- === PEDIR CITA: móvil solo dentro del collapse === -->
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link fw-bold" href="gestion_citas.html">
+                                <i class="fa-solid fa-scissors me-2"></i> Pedir Cita
+                            </a>
+                        </li>
+
+                        <!-- Aparece si no hay sesión -->
                         <div id="authLinks">
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" href="login.html"><i class="fa-solid fa-user"></i> Iniciar sesión</a>
+                                <a class="nav-link fw-bold" href="login.html">
+                                    <i class="fa-solid fa-user"></i> Iniciar sesión
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" href="register.html"><i class="fa-solid fa-user-plus"></i> Registrarse</a>
+                                <a class="nav-link fw-bold" href="register.html">
+                                    <i class="fa-solid fa-user-plus"></i> Registrarse
+                                </a>
                             </li>
                         </div>
 
-                        <!-- Aparece si hay una sesión iniciada -->
+                        <!-- Aparece si hay sesión -->
                         <div id="userLinks" style="display: none;">
                             <span class="navbar-text text-white" style="font-size: 0.9rem; padding: 8px 15px;">
-                Hola, <span id="userName"></span>
+                                Hola, <span id="userName"></span>
                             </span>
-                            <!-- Dropdown para Historial de Citas y cerrar sesión -->
+
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Mi Cuenta
-                </a>
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Mi Cuenta
+                                </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
-                                        <a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis Citas</a>
+                                        <a class="dropdown-item" href="historial_citas.html" id="historialCitasLink">Mis
+                                            Citas</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar sesión</a>
+                                        <a class="dropdown-item" href="../backend/logout.php" id="logoutLink">Cerrar
+                                            sesión</a>
                                     </li>
                                 </ul>
                             </li>
@@ -91,10 +108,10 @@
                 <div class="mb-3">
                     <label for="servicio" class="form-label">Servicio</label>
                     <select class="form-control" id="servicio" name="servicio" required>
-            <option value="corte">Corte</option>
-            <option value="Tinte">Tinte</option>
-            <option value="barba">Barba</option>
-          </select>
+                        <option value="corte">Corte</option>
+                        <option value="Tinte">Tinte</option>
+                        <option value="barba">Barba</option>
+                    </select>
                 </div>
 
                 <!-- 2. Luego Fecha -->
