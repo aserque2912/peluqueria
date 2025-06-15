@@ -64,7 +64,7 @@ if ($fileError !== UPLOAD_ERR_OK) {
     exit;
 }
 
-// 4) Validar tipo MIME (opcional, pero recomendado)
+// 4) Validar tipo MIME
 $permitidos = ['image/jpeg', 'image/png', 'image/gif'];
 $finfo = finfo_open(FILEINFO_MIME_TYPE);
 $mime  = finfo_file($finfo, $_FILES['file']['tmp_name']);
@@ -81,15 +81,13 @@ if (!in_array($mime, $permitidos)) {
 $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 $nombreUnico = uniqid('carousel_') . '.' . $ext;
 
-// Carpeta donde queremos guardar las imágenes: 
-//   asumimos que este script está en /peluqueria/backend/upload_carousel.php
-//   y las imágenes van a /peluqueria/frontend/img/carousel/
-$carpetaDestino = __DIR__ . '/../frontend/img/carousel/';
+// Carpeta donde guardar las imágenes en producción:
+// asumimos que la carpeta pública es /img/carousel/ en la raíz del proyecto
+$carpetaDestino = __DIR__ . '/../img/carousel/';
 $rutaArchivo    = $carpetaDestino . $nombreUnico;
 
-// 6) Verificar que la carpeta destino existe y se puede escribir
+// 6) Verificar carpeta destino
 if (!is_dir($carpetaDestino)) {
-    // Intentamos crearla automáticamente (con permisos 0755)
     if (!mkdir($carpetaDestino, 0755, true)) {
         echo json_encode([
             'success' => false,
@@ -98,8 +96,6 @@ if (!is_dir($carpetaDestino)) {
         exit;
     }
 }
-
-// Verificar permisos de escritura
 if (!is_writable($carpetaDestino)) {
     echo json_encode([
         'success' => false,
@@ -108,7 +104,7 @@ if (!is_writable($carpetaDestino)) {
     exit;
 }
 
-// 7) Mover el archivo temporal a la carpeta destino
+// 7) Mover el archivo
 if (!move_uploaded_file($_FILES['file']['tmp_name'], $rutaArchivo)) {
     echo json_encode([
         'success' => false,
@@ -121,32 +117,30 @@ if (!move_uploaded_file($_FILES['file']['tmp_name'], $rutaArchivo)) {
 try {
     $conexion = obtenerConexion();
 
-    // Calculamos el siguiente display_order (máximo + 1)
+    // calcular siguiente display_order
     $sqlMaxOrder = "SELECT COALESCE(MAX(display_order), 0) + 1 AS next_ord FROM carousel_images";
     $res         = $conexion->query($sqlMaxOrder);
     if (!$res) {
-        // Si falla la consulta, borramos el archivo físico y reportamos
         if (file_exists($rutaArchivo)) unlink($rutaArchivo);
         throw new Exception('Error al calcular display_order: ' . $conexion->error);
     }
     $row       = $res->fetch_assoc();
     $nextOrder = (int)$row['next_ord'];
 
-    // Preparamos el INSERT
+    // insertar
     $sqlInsert = "INSERT INTO carousel_images (filename, caption, display_order) VALUES (?, ?, ?)";
     $stmt      = $conexion->prepare($sqlInsert);
     if (!$stmt) {
         if (file_exists($rutaArchivo)) unlink($rutaArchivo);
         throw new Exception('Error en prepare INSERT: ' . $conexion->error);
     }
-
     $caption = trim($_POST['caption'] ?? '');
     $stmt->bind_param('ssi', $nombreUnico, $caption, $nextOrder);
     if (!$stmt->execute()) {
-        // Si falla el INSERT, borramos el archivo y reportamos
         if (file_exists($rutaArchivo)) unlink($rutaArchivo);
         throw new Exception('Error al ejecutar INSERT: ' . $stmt->error);
     }
+
     $stmt->close();
     $conexion->close();
 

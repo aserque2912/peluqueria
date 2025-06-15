@@ -32,7 +32,7 @@ RUN chown -R www-data:www-data /var/www/html \
  && chmod -R 755 /var/www/html
 
 # 7) Prioriza landing.html como página de inicio
-RUN echo "DirectoryIndex landing.html index.html" \
+RUN echo "DirectoryIndex landing.html" \
     >> /etc/apache2/apache2.conf
 
 # 8) Expone el puerto 80 y arranca Apache

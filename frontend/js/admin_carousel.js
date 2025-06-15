@@ -1,223 +1,188 @@
 // admin_carousel.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const formUpload = document.getElementById('formUpload');
-    const tableBody = document.querySelector('#tableCarousel tbody');
+  const formUpload    = document.getElementById('formUpload');
+  const tableBody     = document.querySelector('#tableCarousel tbody');
 
-    // 1) Función para cargar todas las imágenes y mostrarlas en la tabla
-    function loadCarouselImages() {
-        fetch('../backend/get_carousel.php')
-            .then(res => res.json())
-            .then(resp => {
-                if (!resp.success) {
-                    console.error('Error al listar imágenes del carrusel:', resp.error);
-                    return;
-                }
-                const imgs = resp.data;
-                tableBody.innerHTML = '';
+  // **AJUSTA ESTOS DOS PATHS** según tu despliegue:
+  // Ruta absoluta al directorio backend (sin slash final)
+  const BACKEND_URL       = `${window.location.origin}/backend`;
+  // Ruta pública a la carpeta de imágenes del carrusel (sin slash final)
+  const CAROUSEL_IMG_PATH = `${window.location.origin}/img/carousel`;
 
-                if (imgs.length === 0) {
-                    tableBody.innerHTML = `
+  // 1) Carga y muestra todas las imágenes en la tabla
+  function loadCarouselImages() {
+    fetch(`${BACKEND_URL}/get_carousel.php`)
+      .then(res => res.json())
+      .then(resp => {
+        if (!resp.success) {
+          console.error('Error al listar imágenes del carrusel:', resp.error);
+          tableBody.innerHTML = `
+            <tr><td colspan="4" class="text-center text-danger">
+              Error cargando imágenes
+            </td></tr>`;
+          return;
+        }
+
+        const imgs = resp.data;
+        tableBody.innerHTML = '';
+
+        if (!Array.isArray(imgs) || imgs.length === 0) {
+          tableBody.innerHTML = `
             <tr>
-              <td colspan="4" class="text-center text-muted">No hay imágenes en el carrusel.</td>
+              <td colspan="4" class="text-center text-muted">
+                No hay imágenes en el carrusel.
+              </td>
             </tr>`;
-                    return;
-                }
+          return;
+        }
 
-                imgs.forEach((img, index) => {
-                    const tr = document.createElement('tr');
+        imgs.forEach((img, index) => {
+          const tr = document.createElement('tr');
 
-                    // 1. Vista previa (thumbnail)
-                    const tdThumb = document.createElement('td');
-                    const imgTag = document.createElement('img');
-                    // Construimos la URL absoluta a la carpeta img/carousel/
-                    const baseURL = `${window.location.origin}/${window.location.pathname.split('/')[1]}/frontend`;
-                    imgTag.src = `${baseURL}/img/carousel/${img.filename}`;
-                    imgTag.alt = img.caption || '';
-                    imgTag.classList.add('thumb');
-                    tdThumb.appendChild(imgTag);
-                    tr.appendChild(tdThumb);
+          // 1️⃣ Vista previa
+          const tdThumb = document.createElement('td');
+          const imgTag  = document.createElement('img');
+          imgTag.src    = `${CAROUSEL_IMG_PATH}/${img.filename}`;
+          imgTag.alt    = img.caption || '';
+          imgTag.classList.add('thumb');
+          tdThumb.appendChild(imgTag);
+          tr.appendChild(tdThumb);
 
-                    // 2. Caption
-                    const tdCaption = document.createElement('td');
-                    tdCaption.textContent = img.caption || '-';
-                    tr.appendChild(tdCaption);
+          // 2️⃣ Caption
+          const tdCap = document.createElement('td');
+          tdCap.textContent = img.caption || '-';
+          tr.appendChild(tdCap);
 
-                    // 3. Orden
-                    const tdOrder = document.createElement('td');
-                    tdOrder.textContent = img.display_order;
-                    tr.appendChild(tdOrder);
+          // 3️⃣ Orden
+          const tdOrd = document.createElement('td');
+          tdOrd.textContent = img.display_order;
+          tr.appendChild(tdOrd);
 
-                    // 4. Acciones (subir, bajar, eliminar)
-                    const tdAcciones = document.createElement('td');
+          // 4️⃣ Acciones
+          const tdAcc = document.createElement('td');
 
-                    // --- Botón "Subir" (▲) ---
-                    const btnUp = document.createElement('button');
-                    btnUp.classList.add('btn', 'btn-sm', 'btn-secondary', 'me-1');
-                    btnUp.innerHTML = '&#9650;'; // flecha hacia arriba
-                    btnUp.title = 'Subir posición';
-                    // Si es la primera fila, deshabilitamos
-                    btnUp.disabled = (index === 0);
-                    btnUp.dataset.id = img.id;
-                    tdAcciones.appendChild(btnUp);
-                    btnUp.addEventListener('click', () => {
-                        reorderImage(img.id, 'up');
-                    });
+          // ▲ Subir
+          const btnUp = document.createElement('button');
+          btnUp.className = 'btn btn-sm btn-secondary me-1';
+          btnUp.innerHTML = '&#9650;';
+          btnUp.disabled  = index === 0;
+          btnUp.title     = 'Subir posición';
+          btnUp.addEventListener('click', () => reorderImage(img.id, 'up'));
+          tdAcc.appendChild(btnUp);
 
-                    // --- Botón "Bajar" (▼) ---
-                    const btnDown = document.createElement('button');
-                    btnDown.classList.add('btn', 'btn-sm', 'btn-secondary', 'me-1');
-                    btnDown.innerHTML = '&#9660;'; // flecha hacia abajo
-                    btnDown.title = 'Bajar posición';
-                    // Si es la última fila, deshabilitamos
-                    btnDown.disabled = (index === imgs.length - 1);
-                    btnDown.dataset.id = img.id;
-                    tdAcciones.appendChild(btnDown);
-                    btnDown.addEventListener('click', () => {
-                        reorderImage(img.id, 'down');
-                    });
+          // ▼ Bajar
+          const btnDown = document.createElement('button');
+          btnDown.className = 'btn btn-sm btn-secondary me-1';
+          btnDown.innerHTML = '&#9660;';
+          btnDown.disabled  = index === imgs.length - 1;
+          btnDown.title     = 'Bajar posición';
+          btnDown.addEventListener('click', () => reorderImage(img.id, 'down'));
+          tdAcc.appendChild(btnDown);
 
-                    // --- Botón "Eliminar" con icono de FontAwesome igual que en el resto del proyecto ---
-                    const btnDelete = document.createElement('button');
-                    btnDelete.classList.add('btn', 'btn-sm', 'btn-danger');
-                    // Aquí usamos la misma clase que aparece en el resto del proyecto:
-                    btnDelete.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-                    btnDelete.title = 'Eliminar imagen';
-                    btnDelete.dataset.id = img.id;
-                    tdAcciones.appendChild(btnDelete);
-                    btnDelete.addEventListener('click', () => {
-                        Swal.fire({
-                            title: '¿Eliminar esta imagen?',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#6c757d',
-                            confirmButtonText: 'Sí, eliminar',
-                            cancelButtonText: 'Cancelar'
-                        }).then(result => {
-                            if (result.isConfirmed) {
-                                deleteImage(img.id);
-                            }
-                        });
-                    });
-
-                    tr.appendChild(tdAcciones);
-                    tableBody.appendChild(tr);
-                });
-            })
-            .catch(err => {
-                console.error('Error en loadCarouselImages():', err);
+          // 🗑️ Eliminar
+          const btnDel = document.createElement('button');
+          btnDel.className = 'btn btn-sm btn-danger';
+          btnDel.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+          btnDel.title     = 'Eliminar imagen';
+          btnDel.addEventListener('click', () => {
+            Swal.fire({
+              title: '¿Eliminar esta imagen?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#6c757d',
+              confirmButtonText: 'Sí, eliminar',
+              cancelButtonText: 'Cancelar'
+            }).then(result => {
+              if (result.isConfirmed) deleteImage(img.id);
             });
-    }
+          });
+          tdAcc.appendChild(btnDel);
 
-    // 2) Función para subir una nueva imagen (idéntica a la que ya tenías)
-    formUpload.addEventListener('submit', e => {
-        e.preventDefault();
-        const formData = new FormData(formUpload);
+          tr.appendChild(tdAcc);
+          tableBody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error('Error en loadCarouselImages():', err);
+      });
+  }
 
-        fetch('../backend/upload_carousel.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(resp => {
-                if (resp.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Imagen subida',
-                        text: resp.message || 'La imagen se ha subido correctamente.',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    formUpload.reset();
-                    loadCarouselImages(); // Recargar tabla tras subir
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error al subir',
-                        text: resp.error || 'Ocurrió un error al subir la imagen.',
-                        confirmButtonColor: '#d33'
-                    });
-                }
-            })
-            .catch(err => {
-                console.error('Error en upload:', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error inesperado',
-                    text: 'No se pudo comunicar con el servidor.',
-                    confirmButtonColor: '#d33'
-                });
-            });
+  // 2) Subir nueva imagen
+  formUpload.addEventListener('submit', e => {
+    e.preventDefault();
+    const formData = new FormData(formUpload);
+
+    fetch(`${BACKEND_URL}/upload_carousel.php`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Imagen subida',
+          text: resp.message || 'La imagen se ha subido correctamente.',
+          confirmButtonColor: '#3085d6'
+        }).then(() => {
+          formUpload.reset();
+          loadCarouselImages();
+        });
+      } else {
+        Swal.fire('Error al subir', resp.error || 'Ha ocurrido un error.', 'error');
+      }
+    })
+    .catch(err => {
+      console.error('Error en upload:', err);
+      Swal.fire('Error inesperado','No se pudo comunicar con el servidor.','error');
     });
+  });
 
-    // 3) Función para borrar una imagen por su ID (idéntica a la que ya tenías)
-    function deleteImage(id) {
-        fetch('../backend/delete_carousel.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id })
-            })
-            .then(res => res.json())
-            .then(resp => {
-                if (resp.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Eliminada',
-                        text: resp.message || 'Imagen eliminada correctamente.',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    loadCarouselImages(); // Recargar tabla tras eliminar
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error al eliminar',
-                        text: resp.error || 'No se pudo eliminar la imagen.',
-                        confirmButtonColor: '#d33'
-                    });
-                }
-            })
-            .catch(err => {
-                console.error('Error en deleteImage():', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error inesperado',
-                    text: 'No se pudo comunicar con el servidor.',
-                    confirmButtonColor: '#d33'
-                });
-            });
-    }
+  // 3) Borrar imagen
+  function deleteImage(id) {
+    fetch(`${BACKEND_URL}/delete_carousel.php`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ id })
+    })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp.success) {
+        Swal.fire('Eliminada','Imagen eliminada correctamente.','success')
+          .then(loadCarouselImages);
+      } else {
+        Swal.fire('Error al eliminar', resp.error || 'No se pudo eliminar.','error');
+      }
+    })
+    .catch(err => {
+      console.error('Error en deleteImage():', err);
+      Swal.fire('Error inesperado','No se pudo comunicar con el servidor.','error');
+    });
+  }
 
-    // 4) Función para reordenar la imagen (subir o bajar)
-    function reorderImage(id, direction) {
-        fetch('../backend/update_carousel_order.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, direction })
-            })
-            .then(res => res.json())
-            .then(resp => {
-                if (resp.success) {
-                    loadCarouselImages(); // Recargar tabla tras reordenar
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error al reordenar',
-                        text: resp.error || 'No se pudo cambiar el orden.',
-                        confirmButtonColor: '#d33'
-                    });
-                }
-            })
-            .catch(err => {
-                console.error('Error en reorderImage():', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error inesperado',
-                    text: 'No se pudo comunicar con el servidor.',
-                    confirmButtonColor: '#d33'
-                });
-            });
-    }
+  // 4) Reordenar imagen
+  function reorderImage(id, direction) {
+    fetch(`${BACKEND_URL}/update_carousel_order.php`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ id, direction })
+    })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp.success) {
+        loadCarouselImages();
+      } else {
+        Swal.fire('Error al reordenar', resp.error || 'No se pudo cambiar el orden.','error');
+      }
+    })
+    .catch(err => {
+      console.error('Error en reorderImage():', err);
+      Swal.fire('Error inesperado','No se pudo comunicar con el servidor.','error');
+    });
+  }
 
-    // 5) Al cargar la página, traemos las imágenes existentes
-    loadCarouselImages();
+  // 5) Inicializamos
+  loadCarouselImages();
 });

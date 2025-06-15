@@ -1,7 +1,7 @@
 // index.js
 
 // 1) Verificar si el usuario está autenticado al cargar la página
-fetch('../backend/check_session.php')
+fetch('/backend/check_session.php')
     .then(response => response.json())
     .then(data => {
         if (data.loggedIn) {
@@ -13,7 +13,7 @@ fetch('../backend/check_session.php')
                 // Enlace "Ver todas las citas"
                 if (dropdownMenu && !document.getElementById('adminCitasLink')) {
                     const li = document.createElement('li');
-                    li.innerHTML = `<a class="dropdown-item" href="../frontend/admin_citas.html" id="adminCitasLink">Ver todas las citas</a>`;
+                    li.innerHTML = `<a class="dropdown-item" href="/admin_citas.html" id="adminCitasLink">Ver todas las citas</a>`;
 
                     const misCitasLi = dropdownMenu.querySelector('li');
                     if (misCitasLi && misCitasLi.nextSibling) {
@@ -26,7 +26,7 @@ fetch('../backend/check_session.php')
                 // Enlace "Ver Usuarios"
                 if (dropdownMenu && !document.getElementById('verUsuariosLink')) {
                     const liUsuarios = document.createElement('li');
-                    liUsuarios.innerHTML = `<a class="dropdown-item" href="../frontend/ver_usuarios.html" id="verUsuariosLink">Ver Usuarios</a>`;
+                    liUsuarios.innerHTML = `<a class="dropdown-item" href="/ver_usuarios.html" id="verUsuariosLink">Ver Usuarios</a>`;
 
                     const adminCitasLi = document.getElementById('adminCitasLink');
                     if (adminCitasLi && adminCitasLi.parentElement) {
@@ -44,7 +44,7 @@ fetch('../backend/check_session.php')
                 // Enlace "Bloquear Horas"
                 if (dropdownMenu && !document.getElementById('bloquearHorasLink')) {
                     const liBloquearHoras = document.createElement('li');
-                    liBloquearHoras.innerHTML = `<a class="dropdown-item" href="../frontend/bloquear_horas.html" id="bloquearHorasLink">Bloquear Horas</a>`;
+                    liBloquearHoras.innerHTML = `<a class="dropdown-item" href="/bloquear_horas.html" id="bloquearHorasLink">Bloquear Horas</a>`;
 
                     const verUsuariosLi = document.getElementById('verUsuariosLink');
                     if (verUsuariosLi && verUsuariosLi.parentElement) {
@@ -62,7 +62,7 @@ fetch('../backend/check_session.php')
                 // Enlace "Horarios Bloqueados"
                 if (dropdownMenu && !document.getElementById('verBloqueosLink')) {
                     const liBloqueos = document.createElement('li');
-                    liBloqueos.innerHTML = `<a class="dropdown-item" href="../frontend/ver_bloqueos.html" id="verBloqueosLink">Horarios Bloqueados</a>`;
+                    liBloqueos.innerHTML = `<a class="dropdown-item" href="/ver_bloqueos.html" id="verBloqueosLink">Horarios Bloqueados</a>`;
 
                     const logoutLink = document.getElementById('logoutLink');
                     if (logoutLink && logoutLink.parentElement) {
@@ -76,7 +76,7 @@ fetch('../backend/check_session.php')
                 if (dropdownMenu && !document.getElementById('adminCarouselLink')) {
                     const liCarousel = document.createElement('li');
                     liCarousel.innerHTML = `
-                        <a class="dropdown-item" href="../frontend/admin_carousel.html" id="adminCarouselLink">
+                        <a class="dropdown-item" href="/admin_carousel.html" id="adminCarouselLink">
                             Imágenes del Carrusel
                         </a>
                     `;
@@ -149,29 +149,35 @@ function loadCarouselImages() {
     fetch('../backend/get_carousel.php')
         .then(res => res.json())
         .then(resp => {
-            if (!resp.success) return;
+            console.log('get_carousel response:', resp);
 
-            // Limpiamos cualquier contenido anterior
+            if (!resp.success) {
+                console.error('Backend error:', resp.error);
+                return;
+            }
+
+            // resp.data es tu array de imágenes
+            const total = resp.data?.length??resp.count;
+            console.log('Imágenes recibidas:', total);
+
             carouselContainer.innerHTML = '';
             slides = [];
 
             resp.data.forEach(item => {
-                // Creamos un <div class="carousel-slide"> por cada imagen
                 const slideDiv = document.createElement('div');
                 slideDiv.classList.add('carousel-slide');
 
-                const imgTag = document.createElement('img');
-                imgTag.src = `img/carousel/${item.filename}`;
-                imgTag.alt = item.caption || '';
-                imgTag.style.width = '100%';
-                imgTag.style.display = 'block';
+                const img = document.createElement('img');
+                img.src = `/img/carousel/${item.filename}`;
+                img.alt = item.caption || '';
+                img.style.width = '100%';
+                img.style.display = 'block';
 
-                slideDiv.appendChild(imgTag);
+                slideDiv.appendChild(img);
                 carouselContainer.appendChild(slideDiv);
                 slides.push(slideDiv);
             });
 
-            // Una vez creados los slides, inicializamos controles y autoplay
             setupCarouselControls();
             showSlide(0);
         })
@@ -179,6 +185,8 @@ function loadCarouselImages() {
             console.error('Error al cargar imágenes del carrusel:', err);
         });
 }
+
+
 
 // 2) Asociar listeners a botones "next"/"prev" y configurar autoplay
 function setupCarouselControls() {

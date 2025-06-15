@@ -1,7 +1,7 @@
 // gestion_citas.js
 
 // 1) Verificar si el usuario está autenticado al cargar la página
-fetch('../backend/check_session.php')
+fetch('/backend/check_session.php')
     .then(response => response.json())
     .then(data => {
         if (data.loggedIn) {
@@ -228,7 +228,7 @@ function enviarReserva(fecha, hora, servicio) {
                         text: 'Tu cita ha sido registrada correctamente.',
                         confirmButtonColor: '#3085d6'
                     }).then(() => {
-                        window.location.href = '../frontend/index.html';
+                        window.location.href = '/index.html';
                     });
                 } else {
                     Swal.fire({
