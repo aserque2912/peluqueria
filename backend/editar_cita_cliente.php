@@ -1,7 +1,5 @@
-<?php
-// <<< NO HAY NADA DE NADA ANTES DEL <?php
-
-// Desactivar mensajes de warning/notices para no romper el JSON
+<?php 
+// Desactivar warnings/notices para no romper el JSON
 ini_set('display_errors', '0');
 error_reporting(0);
 
@@ -10,23 +8,22 @@ session_start();
 
 include_once __DIR__ . '/config.php';
 
-$conexion = obtenerConexion();
+$conexion    = obtenerConexion();
 
-// Recogemos los datos vía POST (form-data)
-$id_cita    = $_POST['id']       ?? null;
-$fecha      = $_POST['fecha']    ?? null;
-$hora       = $_POST['hora']     ?? null;
-$servicio   = $_POST['servicio'] ?? null;
-$usuario_id = $_SESSION['usuario']['id']   ?? null;
-$rol        = $_SESSION['usuario']['rol']  ?? null;
+// 1) Recoger datos vía POST
+$id_cita     = $_POST['id']       ?? null;
+$fecha       = $_POST['fecha']    ?? null;
+$hora        = $_POST['hora']     ?? null;
+$servicio    = $_POST['servicio'] ?? null;
+$usuario_id  = $_SESSION['usuario']['id']  ?? null;
 
-// 1) Validaciones básicas
+// 2) Validaciones básicas
 if (
     !$id_cita ||
-    !$fecha   ||
-    !$hora    ||
-    !$servicio||
-    !$usuario_id 
+    !$fecha  ||
+    !$hora   ||
+    !$servicio ||
+    !$usuario_id
 ) {
     echo json_encode([
         'success' => false,
@@ -35,23 +32,31 @@ if (
     exit;
 }
 
-// 2) Comprobar que la cita existe y pertenece a este cliente
+// 3) Comprobar que la cita existe y que es propiedad del cliente
 $stmtChk = $conexion->prepare("SELECT user_id FROM citas WHERE id = ?");
 $stmtChk->bind_param('i', $id_cita);
 $stmtChk->execute();
 $resChk = $stmtChk->get_result();
+
 if ($resChk->num_rows === 0) {
-    echo json_encode(['success' => false, 'message' => 'Cita no encontrada']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Cita no encontrada'
+    ]);
     exit;
 }
+
 $row = $resChk->fetch_assoc();
-if ($row['user_id'] != $usuario_id) {
-    echo json_encode(['success' => false, 'message' => 'No puedes editar esta cita']);
+if ((int)$row['user_id'] !== (int)$usuario_id) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'No puedes editar esta cita'
+    ]);
     exit;
 }
 $stmtChk->close();
 
-// 3) Hacer el UPDATE forzando estado = 'pendiente'
+// 4) Actualizar fecha, hora, servicio — y forzar estado = 'pendiente'
 $sql = "
     UPDATE citas
        SET fecha    = ?,
@@ -65,7 +70,10 @@ $stmtUpd = $conexion->prepare($sql);
 $stmtUpd->bind_param('sssii', $fecha, $hora, $servicio, $id_cita, $usuario_id);
 
 if ($stmtUpd->execute()) {
-    echo json_encode(['success' => true]);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Cita actualizada y marcada como pendiente'
+    ]);
 } else {
     echo json_encode([
         'success' => false,
